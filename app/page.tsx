@@ -2,19 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useCart } from "./cart-context";
+import { calculerPrix, formaterPrixCHF, PRIX_MINIMUM } from "./pricing";
+import { Category, Print } from "@/types/print";
 
 // --- Data --------------------------------------------------------------
 // With no backend yet, the print collection is hardcoded here.
 // It will likely come from an API or a CMS eventually.
 
-type Category = "montagne" | "mer" | "desert" | "foret";
-
-type Print = {
-  id: number;
-  title: string;
-  category: Category;
-  image: string;
-};
 
 const FILTERS: { value: Category | "all"; label: string }[] = [
   { value: "all", label: "Tous" },
@@ -42,29 +37,6 @@ const FRAMES: { value: string; label: string }[] = [
   { value: "cuivre", label: "Alu cuivre" },
   { value: "argente", label: "Alu argenté" },
 ];
-
-// Grille de prix (CHF) par format, selon qu'un cadre est choisi ou non.
-// Le prix ne dépend pas de la photo : il est le même pour tout le catalogue.
-const PRICING: Record<string, { sansCadre: number; avecCadre: number }> = {
-  "20x30": { sansCadre: 34.9, avecCadre: 64.9 },
-  "40x60": { sansCadre: 54.9, avecCadre: 99.9 },
-  "60x90": { sansCadre: 109, avecCadre: 209.9 },
-};
-// Le prix affiché sur les cartes ("à partir de ..."), soit le tarif le plus bas du catalogue.
-const PRIX_MINIMUM = PRICING["20x30"].sansCadre;
-
-function calculerPrix(format: string, frame: string): number {
-  const prixFormat = PRICING[format];
-  return frame === "aucun" ? prixFormat.sansCadre : prixFormat.avecCadre;
-}
-
-// Convention suisse : un montant rond s'affiche "109.-", un montant avec
-// centimes s'affiche "34.90".
-function formaterPrixCHF(montant: number): string {
-  return Number.isInteger(montant)
-    ? `CHF ${montant}.-`
-    : `CHF ${montant.toFixed(2)}`;
-}
 
 // Each `image` points to a file expected in /public/images/tirages/.
 // Drop your photos there with exactly these names for them to show up.
