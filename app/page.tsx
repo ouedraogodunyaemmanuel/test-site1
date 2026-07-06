@@ -13,7 +13,6 @@ type Print = {
   id: number;
   title: string;
   category: Category;
-  price: number;
   image: string;
 };
 
@@ -27,9 +26,9 @@ const FILTERS: { value: Category | "all"; label: string }[] = [
 
 // Customizable options offered when buying a print.
 const FORMATS: { value: string; label: string }[] = [
-  { value: "30x20", label: "30 × 20 cm" },
-  { value: "60x40", label: "60 × 40 cm" },
-  { value: "90x60", label: "90 × 60 cm" },
+  { value: "20x30", label: "20 × 30 cm" },
+  { value: "40x60", label: "40 × 60 cm" },
+  { value: "60x90", label: "60 × 90 cm" },
 ];
 
 const FINISHES: { value: string; label: string }[] = [
@@ -44,6 +43,29 @@ const FRAMES: { value: string; label: string }[] = [
   { value: "argente", label: "Alu argenté" },
 ];
 
+// Grille de prix (CHF) par format, selon qu'un cadre est choisi ou non.
+// Le prix ne dépend pas de la photo : il est le même pour tout le catalogue.
+const PRICING: Record<string, { sansCadre: number; avecCadre: number }> = {
+  "20x30": { sansCadre: 34.9, avecCadre: 64.9 },
+  "40x60": { sansCadre: 54.9, avecCadre: 99.9 },
+  "60x90": { sansCadre: 109, avecCadre: 209.9 },
+};
+// Le prix affiché sur les cartes ("à partir de ..."), soit le tarif le plus bas du catalogue.
+const PRIX_MINIMUM = PRICING["20x30"].sansCadre;
+
+function calculerPrix(format: string, frame: string): number {
+  const prixFormat = PRICING[format];
+  return frame === "aucun" ? prixFormat.sansCadre : prixFormat.avecCadre;
+}
+
+// Convention suisse : un montant rond s'affiche "109.-", un montant avec
+// centimes s'affiche "34.90".
+function formaterPrixCHF(montant: number): string {
+  return Number.isInteger(montant)
+    ? `CHF ${montant}.-`
+    : `CHF ${montant.toFixed(2)}`;
+}
+
 // Each `image` points to a file expected in /public/images/tirages/.
 // Drop your photos there with exactly these names for them to show up.
 const PRINTS: Print[] = [
@@ -51,56 +73,48 @@ const PRINTS: Print[] = [
     id: 1,
     title: "Sommets silencieux",
     category: "montagne",
-    price: 320,
     image: "/images/tirages/sommets-silencieux.jpg",
   },
   {
     id: 2,
     title: "Miroir alpin",
     category: "montagne",
-    price: 280,
     image: "/images/tirages/miroir-alpin.jpg",
   },
   {
     id: 3,
     title: "Marée du soir",
     category: "mer",
-    price: 260,
     image: "/images/tirages/maree-du-soir.jpg",
   },
   {
     id: 4,
     title: "Vallée oubliée",
     category: "montagne",
-    price: 340,
     image: "/images/tirages/vallee-oubliee.jpg",
   },
   {
     id: 5,
     title: "Dunes de sable",
     category: "desert",
-    price: 300,
     image: "/images/tirages/dunes-de-sable.jpg",
   },
   {
     id: 6,
     title: "Lumière des bois",
     category: "foret",
-    price: 250,
     image: "/images/tirages/lumiere-des-bois.jpg",
   },
   {
     id: 7,
     title: "Étendue sauvage",
     category: "foret",
-    price: 290,
     image: "/images/tirages/etendue-sauvage.jpg",
   },
   {
     id: 8,
     title: "Aube sur les cimes",
     category: "montagne",
-    price: 310,
     image: "/images/tirages/aube-sur-les-cimes.jpg",
   },
 ];
@@ -273,7 +287,7 @@ function PrintCard({
       <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/0 to-black/0 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <span className="font-serif text-lg text-stone-50">{print.title}</span>
         <span className="mt-1 text-sm text-stone-300">
-          à partir de {print.price} €
+          à partir de {formaterPrixCHF(PRIX_MINIMUM)}
         </span>
       </div>
     </button>
@@ -288,10 +302,12 @@ function AboutSection() {
       <div className="mx-auto max-w-3xl px-6 py-24 text-center sm:px-10">
         <h2 className="font-serif text-3xl text-stone-900">Une exigence de qualité</h2>
         <p className="mt-6 text-stone-600 leading-relaxed">
-          Chaque tirage est réalisé en édition limitée sur papier fine art
-          100% coton, avec des encres pigmentaires garanties plus de 80 ans
-          sans altération. Une manière de faire entrer un paysage chez soi,
-          durablement.
+          Chaque tirage est réalisé avec soin sur un papier premium HP 250g/m², 
+          élégamment laminé pour le protéger durablement de l'humidité, 
+          de la lumière et des rayures. Un tirage d'exception, 
+          fait pour sublimer votre intérieur sans jamais faiblir.
+
+          Une manière intemporelle de faire entrer un paysage chez soi.
         </p>
       </div>
     </section>
@@ -380,7 +396,9 @@ function PrintDetailModal({
             <h3 id="print-detail-title" className="font-serif text-2xl text-stone-900">
               {print.title}
             </h3>
-            <p className="mt-6 text-2xl text-stone-900">{print.price} €</p>
+            <p className="mt-6 text-2xl text-stone-900">
+              {formaterPrixCHF(calculerPrix(selectedFormat, selectedFrame))}
+            </p>
 
             <div className="mt-6">
               <OptionGroup
