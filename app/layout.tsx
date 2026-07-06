@@ -19,7 +19,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Horizon — Tirages d'art de paysages",
+  title: "Deo Création — Tirages d'art de paysages",
   description: "Tirages photographiques d'exception, éditions limitées.",
 };
 

@@ -13,7 +13,6 @@ type Tirage = {
   id: number;
   titre: string;
   categorie: Categorie;
-  format: string;
   prix: number;
   image: string;
 };
@@ -26,78 +25,83 @@ const FILTRES: { valeur: Categorie | "tous"; libelle: string }[] = [
   { valeur: "foret", libelle: "Forêt" },
 ];
 
+// Options personnalisables proposées lors de l'achat d'un tirage.
+const FORMATS: { valeur: string; libelle: string }[] = [
+  { valeur: "30x20", libelle: "30 × 20 cm" },
+  { valeur: "60x40", libelle: "60 × 40 cm" },
+  { valeur: "90x60", libelle: "90 × 60 cm" },
+];
+
+const FINITIONS: { valeur: string; libelle: string }[] = [
+  { valeur: "mat", libelle: "Mat" },
+  { valeur: "brillant", libelle: "Brillant" },
+];
+
+const CADRES: { valeur: string; libelle: string }[] = [
+  { valeur: "aucun", libelle: "Pas de cadre" },
+  { valeur: "noir", libelle: "Alu noir" },
+  { valeur: "cuivre", libelle: "Alu cuivre" },
+  { valeur: "argente", libelle: "Alu argenté" },
+];
+
+// Chaque `image` pointe vers un fichier attendu dans /public/images/tirages/.
+// Déposez-y vos photos avec exactement ces noms pour qu'elles s'affichent.
 const TIRAGES: Tirage[] = [
   {
     id: 1,
     titre: "Sommets silencieux",
     categorie: "montagne",
-    format: "60 × 90 cm",
     prix: 320,
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/sommets-silencieux.jpg",
   },
   {
     id: 2,
     titre: "Miroir alpin",
     categorie: "montagne",
-    format: "50 × 70 cm",
     prix: 280,
-    image:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/miroir-alpin.jpg",
   },
   {
     id: 3,
     titre: "Marée du soir",
     categorie: "mer",
-    format: "50 × 70 cm",
     prix: 260,
-    image:
-      "https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/maree-du-soir.jpg",
   },
   {
     id: 4,
     titre: "Vallée oubliée",
     categorie: "montagne",
-    format: "60 × 90 cm",
     prix: 340,
-    image:
-      "https://images.unsplash.com/photo-1439066615861-d1af74d74000?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/vallee-oubliee.jpg",
   },
   {
     id: 5,
     titre: "Dunes de sable",
     categorie: "desert",
-    format: "60 × 90 cm",
     prix: 300,
-    image:
-      "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/dunes-de-sable.jpg",
   },
   {
     id: 6,
     titre: "Lumière des bois",
     categorie: "foret",
-    format: "50 × 70 cm",
     prix: 250,
-    image:
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/lumiere-des-bois.jpg",
   },
   {
     id: 7,
     titre: "Étendue sauvage",
     categorie: "foret",
-    format: "60 × 90 cm",
     prix: 290,
-    image:
-      "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/etendue-sauvage.jpg",
   },
   {
     id: 8,
     titre: "Aube sur les cimes",
     categorie: "montagne",
-    format: "60 × 90 cm",
     prix: 310,
-    image:
-      "https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=1200&auto=format&fit=crop",
+    image: "/images/tirages/aube-sur-les-cimes.jpg",
   },
 ];
 
@@ -144,7 +148,7 @@ function EnTete() {
     <header className="sticky top-0 z-40 border-b border-stone-200/70 bg-stone-50/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-10">
         <span className="font-serif text-xl tracking-[0.2em] text-stone-900">
-          HORIZON
+          DEO CREATION
         </span>
         <nav className="hidden gap-8 text-sm text-stone-600 sm:flex">
           <a href="#galerie" className="transition-colors hover:text-stone-900">
@@ -167,9 +171,10 @@ function EnTete() {
 function SectionHero() {
   return (
     <section className="relative flex h-[85vh] min-h-[520px] items-end overflow-hidden">
+      {/* Déposez votre photo principale dans /public/images/hero.jpg */}
       <Image
-        src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2400&auto=format&fit=crop"
-        alt="Chaîne de montagnes se reflétant dans un lac au lever du jour"
+        src="/images/hero.jpg"
+        alt="Paysage mis en avant"
         fill
         priority
         className="object-cover"
@@ -264,11 +269,11 @@ function CarteTirage({
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
       />
-      {/* Overlay révélé au survol : titre, format et prix du tirage */}
+      {/* Overlay révélé au survol : titre et prix de départ du tirage */}
       <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/0 to-black/0 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <span className="font-serif text-lg text-stone-50">{tirage.titre}</span>
         <span className="mt-1 text-sm text-stone-300">
-          {tirage.format} — {tirage.prix} €
+          à partir de {tirage.prix} €
         </span>
       </div>
     </button>
@@ -299,14 +304,18 @@ function PiedDePage() {
   return (
     <footer id="pied-de-page" className="border-t border-stone-200">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-sm text-stone-500 sm:flex-row sm:justify-between sm:px-10">
-        <span className="font-serif tracking-[0.2em] text-stone-700">HORIZON</span>
-        <span>© {new Date().getFullYear()} Horizon. Tous droits réservés.</span>
+        <span className="font-serif tracking-[0.2em] text-stone-700">DEO CREATION</span>
+        <span>© {new Date().getFullYear()} Deo Création. Tous droits réservés.</span>
       </div>
     </footer>
   );
 }
 
 // --- Fenêtre de détail (lightbox) ---------------------------------------
+
+// Nom des trois groupes d'options personnalisables, utilisé pour savoir
+// lequel des sous-menus est actuellement déplié.
+type NomGroupeOption = "format" | "finition" | "cadre";
 
 function FenetreDetailTirage({
   tirage,
@@ -315,6 +324,15 @@ function FenetreDetailTirage({
   tirage: Tirage;
   onFermer: () => void;
 }) {
+  const [formatChoisi, setFormatChoisi] = useState(FORMATS[0].valeur);
+  const [finitionChoisie, setFinitionChoisie] = useState(FINITIONS[0].valeur);
+  const [cadreChoisi, setCadreChoisi] = useState(CADRES[0].valeur);
+  const [groupeOuvert, setGroupeOuvert] = useState<NomGroupeOption | null>(null);
+
+  function basculerGroupe(nom: NomGroupeOption) {
+    setGroupeOuvert((actuel) => (actuel === nom ? null : nom));
+  }
+
   // Ferme la fenêtre avec la touche Échap, pour une navigation au clavier correcte.
   useEffect(() => {
     function gererTouche(evenement: KeyboardEvent) {
@@ -332,10 +350,10 @@ function FenetreDetailTirage({
       onClick={onFermer}
     >
       <div
-        className="relative flex w-full max-w-4xl flex-col overflow-hidden bg-stone-50 sm:flex-row"
+        className="relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 sm:flex-row"
         onClick={(evenement) => evenement.stopPropagation()}
       >
-        <div className="relative aspect-[4/5] w-full sm:w-3/5">
+        <div className="relative aspect-[4/5] w-full shrink-0 sm:w-3/5">
           <Image
             src={tirage.image}
             alt={tirage.titre}
@@ -347,8 +365,34 @@ function FenetreDetailTirage({
         <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">
           <div>
             <h3 className="font-serif text-2xl text-stone-900">{tirage.titre}</h3>
-            <p className="mt-2 text-stone-500">{tirage.format}</p>
             <p className="mt-6 text-2xl text-stone-900">{tirage.prix} €</p>
+
+            <div className="mt-6">
+              <GroupeOptions
+                titre="Format"
+                options={FORMATS}
+                valeurActuelle={formatChoisi}
+                estOuvert={groupeOuvert === "format"}
+                onBasculer={() => basculerGroupe("format")}
+                onChoisir={setFormatChoisi}
+              />
+              <GroupeOptions
+                titre="Finition"
+                options={FINITIONS}
+                valeurActuelle={finitionChoisie}
+                estOuvert={groupeOuvert === "finition"}
+                onBasculer={() => basculerGroupe("finition")}
+                onChoisir={setFinitionChoisie}
+              />
+              <GroupeOptions
+                titre="Cadre"
+                options={CADRES}
+                valeurActuelle={cadreChoisi}
+                estOuvert={groupeOuvert === "cadre"}
+                onBasculer={() => basculerGroupe("cadre")}
+                onChoisir={setCadreChoisi}
+              />
+            </div>
           </div>
           <div className="mt-8 flex flex-col gap-3">
             <button
@@ -367,6 +411,73 @@ function FenetreDetailTirage({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Un groupe d'options personnalisables : un bouton affichant le choix actuel,
+// qui déplie un sous-menu de valeurs possibles au clic.
+function GroupeOptions({
+  titre,
+  options,
+  valeurActuelle,
+  estOuvert,
+  onBasculer,
+  onChoisir,
+}: {
+  titre: string;
+  options: { valeur: string; libelle: string }[];
+  valeurActuelle: string;
+  estOuvert: boolean;
+  onBasculer: () => void;
+  onChoisir: (valeur: string) => void;
+}) {
+  const libelleActuel = options.find(
+    (option) => option.valeur === valeurActuelle
+  )?.libelle;
+
+  return (
+    <div className="border-b border-stone-200 py-3 first:border-t">
+      <button
+        type="button"
+        onClick={onBasculer}
+        aria-expanded={estOuvert}
+        className="flex w-full items-center justify-between text-left"
+      >
+        <span className="text-sm text-stone-500">{titre}</span>
+        <span className="flex items-center gap-2 text-sm text-stone-900">
+          {libelleActuel}
+          <span
+            className={`text-xs transition-transform duration-200 ${
+              estOuvert ? "rotate-180" : ""
+            }`}
+            aria-hidden
+          >
+            ▾
+          </span>
+        </span>
+      </button>
+      {estOuvert && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {options.map((option) => (
+            <button
+              key={option.valeur}
+              type="button"
+              onClick={() => {
+                onChoisir(option.valeur);
+                onBasculer();
+              }}
+              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                option.valeur === valeurActuelle
+                  ? "border-stone-900 bg-stone-900 text-stone-50"
+                  : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
+              }`}
+            >
+              {option.libelle}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
