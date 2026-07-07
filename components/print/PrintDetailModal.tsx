@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import type { OptionGroupName, Print } from "@/types/print";
+import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
 import { FORMATS, FINISHES, FRAMES } from "@/data/options";
+import { useCart } from "@/components/cart/CartContext";
 import { OptionGroup } from "./OptionGroup";
 
 export function PrintDetailModal({
@@ -14,6 +15,7 @@ export function PrintDetailModal({
   print: Print;
   onClose: () => void;
 }) {
+  const { addItem, openCart } = useCart();
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0].value);
   const [selectedFinish, setSelectedFinish] = useState(FINISHES[0].value);
   const [selectedFrame, setSelectedFrame] = useState(FRAMES[0].value);
@@ -21,6 +23,25 @@ export function PrintDetailModal({
 
   function toggleGroup(name: OptionGroupName) {
     setOpenGroup((current) => (current === name ? null : name));
+  }
+
+  // Ajoute le tirage au panier avec les options actuellement sélectionnées,
+  // puis ouvre le panier pour confirmer visuellement que l'ajout a marché.
+  function handleAddToCart() {
+    addItem({
+      id: `${print.id}-${selectedFormat}-${selectedFinish}-${selectedFrame}`,
+      printId: print.id,
+      title: print.title,
+      image: print.image,
+      format: selectedFormat,
+      frame: selectedFrame,
+      formatLabel: trouverLabel(FORMATS, selectedFormat),
+      finishLabel: trouverLabel(FINISHES, selectedFinish),
+      frameLabel: trouverLabel(FRAMES, selectedFrame),
+      unitPrice: calculerPrix(selectedFormat, selectedFrame),
+    });
+    onClose();
+    openCart();
   }
 
   // Close the modal with the Escape key, for correct keyboard navigation.
@@ -104,6 +125,7 @@ export function PrintDetailModal({
           <div className="mt-8 flex flex-col gap-3">
             <button
               type="button"
+              onClick={handleAddToCart}
               className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700"
             >
               Ajouter au panier
@@ -120,4 +142,10 @@ export function PrintDetailModal({
       </div>
     </div>
   );
+}
+
+// Retrouve le libellé lisible (ex. "Mat") correspondant à une valeur
+// technique (ex. "mat") dans une liste d'options.
+function trouverLabel(options: SelectOption[], value: string): string {
+  return options.find((option) => option.value === value)?.label ?? value;
 }

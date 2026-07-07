@@ -37,6 +37,12 @@ export type CartItem = {
   printId: number;
   title: string;
   image: string;
+  // Valeurs techniques (ex. "60x90", "noir") en plus des libellés
+  // lisibles : elles permettent de recalculer le prix côté serveur au
+  // moment du paiement, sans faire confiance au prix envoyé par le
+  // navigateur.
+  format: string;
+  frame: string;
   formatLabel: string;
   finishLabel: string;
   frameLabel: string;

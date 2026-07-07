@@ -9,6 +9,7 @@ type CartContextValue = {
   addItem: (item: Omit<CartItem, "quantity">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
   totalItems: number;
   totalPrice: number;
   isOpen: boolean;
@@ -73,6 +74,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function clearCart() {
+    setItems([]);
+  }
+
   const totalItems = items.reduce((somme, item) => somme + item.quantity, 0);
   const totalPrice = items.reduce(
     (somme, item) => somme + item.unitPrice * item.quantity,
@@ -86,6 +91,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         removeItem,
         updateQuantity,
+        clearCart,
         totalItems,
         totalPrice,
         isOpen,
