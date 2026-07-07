@@ -52,6 +52,10 @@ export async function POST(request: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      // Sans ce réglage, Stripe devine la langue depuis le navigateur du
+      // client ("auto") plutôt que d'utiliser la langue du tableau de
+      // bord — comme le site est en français, on la fixe explicitement.
+      locale: "fr",
       payment_method_types: ["card", "twint"],
       line_items,
       success_url: `${origin}/commande/succes?session_id={CHECKOUT_SESSION_ID}`,
