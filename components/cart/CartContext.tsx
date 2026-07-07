@@ -2,21 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-
-// Une ligne du panier correspond à une combinaison précise
-// photo + format + finition + cadre (deux choix différents d'une même
-// photo sont donc deux lignes distinctes).
-export type CartItem = {
-  id: string;
-  printId: number;
-  title: string;
-  image: string;
-  formatLabel: string;
-  finishLabel: string;
-  frameLabel: string;
-  unitPrice: number;
-  quantity: number;
-};
+import type { CartItem } from "@/types/print";
 
 type CartContextValue = {
   items: CartItem[];
