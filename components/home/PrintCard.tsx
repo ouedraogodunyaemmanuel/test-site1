@@ -1,6 +1,8 @@
 import Image from "next/image";
 import type { Print } from "@/types/print";
 import { formaterPrixCHF, PRIX_MINIMUM } from "@/lib/pricing";
+import { getPrintImageUrl } from "@/lib/images";
+import { FORMATS } from "@/data/options";
 
 export function PrintCard({
   print,
@@ -16,7 +18,10 @@ export function PrintCard({
       className="group relative aspect-[4/5] overflow-hidden bg-stone-200 text-left"
     >
       <Image
-        src={print.image}
+        // Pas encore d'options choisies à ce stade (simple survol de la
+        // galerie) : on affiche la variante "sans cadre" par défaut — le
+        // format n'a pas d'importance ici puisque "aucun" l'ignore.
+        src={getPrintImageUrl(print, "aucun", FORMATS[0].value)}
         alt={print.title}
         fill
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

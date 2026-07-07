@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
+import { getPrintImageUrl } from "@/lib/images";
 import { FORMATS, FINISHES, FRAMES } from "@/data/options";
 import { useCart } from "@/components/cart/CartContext";
 import { OptionGroup } from "./OptionGroup";
@@ -32,7 +33,10 @@ export function PrintDetailModal({
       id: `${print.id}-${selectedFormat}-${selectedFinish}-${selectedFrame}`,
       printId: print.id,
       title: print.title,
-      image: print.image,
+      // L'image enregistrée dans le panier correspond exactement au
+      // cadre choisi au moment de l'ajout — elle ne bougera plus ensuite
+      // même si le client rouvre la fiche produit et change d'avis.
+      image: getPrintImageUrl(print, selectedFrame, selectedFormat),
       format: selectedFormat,
       frame: selectedFrame,
       formatLabel: trouverLabel(FORMATS, selectedFormat),
@@ -79,7 +83,9 @@ export function PrintDetailModal({
       >
         <div className="relative aspect-[4/5] w-full shrink-0 sm:w-3/5">
           <Image
-            src={print.image}
+            // Change dynamiquement avec le format et le cadre sélectionnés
+            // ci-dessous.
+            src={getPrintImageUrl(print, selectedFrame, selectedFormat)}
             alt={print.title}
             fill
             sizes="(min-width: 640px) 60vw, 100vw"

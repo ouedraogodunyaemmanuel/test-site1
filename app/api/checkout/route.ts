@@ -61,6 +61,12 @@ export async function POST(request: Request) {
           product_data: {
             name: item.title,
             description: `${item.formatLabel} · ${item.finishLabel} · ${item.frameLabel}`,
+            // Stripe a besoin d'une URL absolue et publiquement
+            // accessible : en local (localhost), Stripe ne pourra pas la
+            // charger et n'affichera simplement pas d'image, sans
+            // erreur — ça fonctionnera normalement une fois le site
+            // déployé avec un vrai nom de domaine.
+            images: [`${origin}${item.image}`],
           },
         },
       };
@@ -72,7 +78,11 @@ export async function POST(request: Request) {
       // client ("auto") plutôt que d'utiliser la langue du tableau de
       // bord — comme le site est en français, on la fixe explicitement.
       locale: "fr",
-      payment_method_types: ["card", "twint"],
+      // Pas de `payment_method_types` ici : Stripe choisit dynamiquement
+      // les moyens de paiement à afficher (carte, TWINT...) selon le
+      // client et la transaction. Les moyens acceptés se gèrent depuis le
+      // Dashboard Stripe (Paramètres → Moyens de paiement), pas dans le
+      // code.
       line_items,
       // Les coordonnées de livraison ont déjà été saisies sur notre propre
       // page (pas besoin de les redemander sur Stripe) : on les attache en

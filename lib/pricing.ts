@@ -1,9 +1,9 @@
 // Grille de prix (CHF) par format, selon qu'un cadre est choisi ou non.
 // Le prix ne dépend pas de la photo : il est le même pour tout le catalogue.
 export const PRICING: Record<string, { sansCadre: number; avecCadre: number }> = {
-  "20x30": { sansCadre: 34.9, avecCadre: 64.9 },
-  "40x60": { sansCadre: 54.9, avecCadre: 99.9 },
-  "60x90": { sansCadre: 109, avecCadre: 209.9 },
+  "20x30": { sansCadre: 39, avecCadre: 69 },
+  "40x60": { sansCadre: 59, avecCadre: 99 },
+  "60x90": { sansCadre: 109, avecCadre: 209 },
 };
 
 // Le prix affiché sur les cartes ("à partir de ..."), soit le tarif le plus bas du catalogue.

@@ -13,7 +13,13 @@ export type Print = {
   id: number;
   title: string;
   category: Category;
-  image: string;
+  // Dossier contenant les 10 variantes de cette photo : une image
+  // "aucun.jpg" (sans cadre, ne varie pas selon le format) et une image
+  // par combinaison cadre × format pour les 3 cadres colorés (ex.
+  // "noir-20x30.jpg", "noir-40x60.jpg", "noir-60x90.jpg", idem pour
+  // cuivre et argente). Voir lib/images.ts pour résoudre le fichier
+  // exact à afficher.
+  imageFolder: string;
 };
 
 // Une option affichable dans un menu déroulant (filtre de catégorie,

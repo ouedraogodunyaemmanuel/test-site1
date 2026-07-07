@@ -11,55 +11,64 @@ export const FILTERS: { value: CategoryFilter; label: string }[] = [
 
 // Avec pas encore de backend, le catalogue est codé en dur ici.
 // Il viendra probablement d'une API ou d'un CMS eventuellement.
-// Chaque `image` pointe vers un fichier attendu dans /public/images/tirages/.
-// Dépose tes photos là-bas avec exactement ces noms pour qu'elles s'affichent.
+//
+// Chaque `imageFolder` pointe vers un dossier attendu dans
+// /public/images/tirages/, qui doit contenir 10 fichiers avec
+// exactement ces noms :
+//   aucun.jpg
+//   noir-20x30.jpg, noir-40x60.jpg, noir-60x90.jpg
+//   cuivre-20x30.jpg, cuivre-40x60.jpg, cuivre-60x90.jpg
+//   argente-20x30.jpg, argente-40x60.jpg, argente-60x90.jpg
+// "aucun.jpg" ne varie pas selon le format (pas de cadre à ajuster à la
+// taille). C'est lib/images.ts qui choisit le bon fichier selon le
+// format et le cadre sélectionnés par le client.
 export const PRINTS: Print[] = [
   {
     id: 1,
     title: "Sommets silencieux",
     category: "montagne",
-    image: "/images/tirages/sommets-silencieux.jpg",
+    imageFolder: "/images/tirages/sommets-silencieux",
   },
   {
     id: 2,
     title: "Miroir alpin",
     category: "montagne",
-    image: "/images/tirages/miroir-alpin.jpg",
+    imageFolder: "/images/tirages/miroir-alpin",
   },
   {
     id: 3,
     title: "Marée du soir",
     category: "mer",
-    image: "/images/tirages/maree-du-soir.jpg",
+    imageFolder: "/images/tirages/maree-du-soir",
   },
   {
     id: 4,
     title: "Vallée oubliée",
     category: "montagne",
-    image: "/images/tirages/vallee-oubliee.jpg",
+    imageFolder: "/images/tirages/vallee-oubliee",
   },
   {
     id: 5,
     title: "Dunes de sable",
     category: "desert",
-    image: "/images/tirages/dunes-de-sable.jpg",
+    imageFolder: "/images/tirages/dunes-de-sable",
   },
   {
     id: 6,
     title: "Lumière des bois",
     category: "foret",
-    image: "/images/tirages/lumiere-des-bois.jpg",
+    imageFolder: "/images/tirages/lumiere-des-bois",
   },
   {
     id: 7,
     title: "Étendue sauvage",
     category: "foret",
-    image: "/images/tirages/etendue-sauvage.jpg",
+    imageFolder: "/images/tirages/etendue-sauvage",
   },
   {
     id: 8,
     title: "Aube sur les cimes",
     category: "montagne",
-    image: "/images/tirages/aube-sur-les-cimes.jpg",
+    imageFolder: "/images/tirages/aube-sur-les-cimes",
   },
 ];
