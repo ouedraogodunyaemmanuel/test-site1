@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/legal/LegalPage";
-import { ACompleter } from "@/components/legal/ACompleter";
+import { ACompleter } from "@/components/shared/ACompleter";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité — Deo Création",

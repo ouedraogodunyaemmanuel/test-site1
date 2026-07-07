@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { GallerySection } from "@/components/home/GallerySection";
 import { AboutSection } from "@/components/home/AboutSection";
+import { ContactSection } from "@/components/home/ContactSection";
 import { PrintDetailModal } from "@/components/print/PrintDetailModal";
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
         onOpenPrint={setOpenPrint}
       />
       <AboutSection />
+      <ContactSection />
       <Footer />
       {openPrint && (
         <PrintDetailModal

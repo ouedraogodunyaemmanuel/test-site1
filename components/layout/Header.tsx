@@ -12,7 +12,7 @@ export function Header() {
           <a href="#about" className="transition-colors hover:text-stone-900">
             À propos
           </a>
-          <a href="#footer" className="transition-colors hover:text-stone-900">
+          <a href="#contact" className="transition-colors hover:text-stone-900">
             Contact
           </a>
         </nav>
