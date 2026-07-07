@@ -1,4 +1,4 @@
-import type { CategoryFilter, Print } from "@/types/print";
+import type { CategoryFilter, CategoryFilterOption, Print } from "@/types/print";
 import { PrintCard } from "./PrintCard";
 
 export function GallerySection({
@@ -8,7 +8,7 @@ export function GallerySection({
   prints,
   onOpenPrint,
 }: {
-  filters: { value: CategoryFilter; label: string }[];
+  filters: CategoryFilterOption[];
   activeCategory: CategoryFilter;
   onCategoryChange: (category: CategoryFilter) => void;
   prints: Print[];

@@ -9,6 +9,12 @@ export type Category = "montagne" | "mer" | "desert" | "foret";
 // Utilisé par les boutons de filtre au-dessus de la galerie.
 export type CategoryFilter = Category | "all";
 
+// Un bouton de filtre de catégorie affiché au-dessus de la galerie.
+export type CategoryFilterOption = {
+  value: CategoryFilter;
+  label: string;
+};
+
 export type Print = {
   id: number;
   title: string;
@@ -65,4 +71,32 @@ export type DeliveryInfo = {
   street: string;
   postalCode: string;
   city: string;
+};
+
+// Ce que CartProvider expose via useCart() (components/cart/CartContext.tsx).
+export type CartContextValue = {
+  items: CartItem[];
+  addItem: (item: Omit<CartItem, "quantity">) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  // true une fois le panier chargé depuis le navigateur : évite qu'une
+  // page vérifie "le panier est vide" avant la fin du chargement et
+  // redirige à tort (ex. après un rafraîchissement de page).
+  isReady: boolean;
+  totalItems: number;
+  totalPrice: number;
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
+};
+
+// Ce que DeliveryProvider expose via useDelivery()
+// (components/checkout/DeliveryContext.tsx).
+export type DeliveryContextValue = {
+  delivery: DeliveryInfo;
+  setDelivery: (info: DeliveryInfo) => void;
+  clearDelivery: () => void;
+  isReady: boolean;
 };

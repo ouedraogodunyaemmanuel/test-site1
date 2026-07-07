@@ -2,25 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { CartItem } from "@/types/print";
-
-type CartContextValue = {
-  items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  // true une fois le panier chargé depuis le navigateur : évite qu'une
-  // page vérifie "le panier est vide" avant la fin du chargement et
-  // redirige à tort (ex. après un rafraîchissement de page).
-  isReady: boolean;
-  totalItems: number;
-  totalPrice: number;
-  isOpen: boolean;
-  openCart: () => void;
-  closeCart: () => void;
-  toggleCart: () => void;
-};
+import type { CartContextValue, CartItem } from "@/types/print";
 
 const CartContext = createContext<CartContextValue | null>(null);
 

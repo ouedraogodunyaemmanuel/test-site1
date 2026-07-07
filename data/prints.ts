@@ -1,7 +1,7 @@
-import type { CategoryFilter, Print } from "@/types/print";
+import type { CategoryFilterOption, Print } from "@/types/print";
 
 // Filtres de catégories affichés au-dessus de la galerie.
-export const FILTERS: { value: CategoryFilter; label: string }[] = [
+export const FILTERS: CategoryFilterOption[] = [
   { value: "all", label: "Tous" },
   { value: "montagne", label: "Montagne" },
   { value: "mer", label: "Mer" },

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { DeliveryInfo } from "@/types/print";
+import type { DeliveryContextValue, DeliveryInfo } from "@/types/print";
 
 const DELIVERY_STORAGE_KEY = "deo-creation-livraison";
 
@@ -13,16 +13,6 @@ const infosVides: DeliveryInfo = {
   street: "",
   postalCode: "",
   city: "",
-};
-
-type DeliveryContextValue = {
-  delivery: DeliveryInfo;
-  setDelivery: (info: DeliveryInfo) => void;
-  clearDelivery: () => void;
-  // true une fois les informations chargées depuis le navigateur : évite
-  // qu'une page vérifie "les infos sont vides" avant la fin du chargement
-  // et redirige à tort.
-  isReady: boolean;
 };
 
 const DeliveryContext = createContext<DeliveryContextValue | null>(null);
