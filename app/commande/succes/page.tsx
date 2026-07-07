@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { stripe } from "@/lib/stripe";
-import { ClearCartOnSuccess } from "@/components/checkout/ClearCartOnSuccess";
+import { ClearOrderOnSuccess } from "@/components/checkout/ClearOrderOnSuccess";
 
 // Cette page tourne côté serveur : elle interroge directement Stripe pour
 // vérifier que le paiement a réellement abouti, plutôt que de faire
@@ -28,7 +28,7 @@ export default async function PageSucces({
             Votre paiement a bien été reçu. Vous recevrez votre tirage
             prochainement.
           </p>
-          <ClearCartOnSuccess />
+          <ClearOrderOnSuccess />
         </>
       ) : (
         <>

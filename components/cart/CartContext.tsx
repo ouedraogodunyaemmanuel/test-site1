@@ -10,6 +10,10 @@ type CartContextValue = {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  // true une fois le panier chargé depuis le navigateur : évite qu'une
+  // page vérifie "le panier est vide" avant la fin du chargement et
+  // redirige à tort (ex. après un rafraîchissement de page).
+  isReady: boolean;
   totalItems: number;
   totalPrice: number;
   isOpen: boolean;
@@ -92,6 +96,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        isReady: estMonte,
         totalItems,
         totalPrice,
         isOpen,

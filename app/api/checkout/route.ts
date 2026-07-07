@@ -1,17 +1,33 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { PRICING, calculerPrix } from "@/lib/pricing";
-import type { CartItem } from "@/types/print";
+import type { CartItem, DeliveryInfo } from "@/types/print";
 
 // Nombre maximum d'exemplaires acceptés pour une même ligne du panier,
 // pour éviter une commande absurde envoyée par erreur ou par abus.
 const QUANTITE_MAXIMUM = 20;
 
 export async function POST(request: Request) {
-  const { items }: { items: CartItem[] } = await request.json();
+  const { items, delivery }: { items: CartItem[]; delivery?: DeliveryInfo } =
+    await request.json();
 
   if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "Le panier est vide." }, { status: 400 });
+  }
+
+  if (
+    !delivery ||
+    !delivery.firstName ||
+    !delivery.lastName ||
+    !delivery.phone ||
+    !delivery.street ||
+    !delivery.postalCode ||
+    !delivery.city
+  ) {
+    return NextResponse.json(
+      { error: "Les informations de livraison sont incomplètes." },
+      { status: 400 }
+    );
   }
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin;
@@ -58,6 +74,16 @@ export async function POST(request: Request) {
       locale: "fr",
       payment_method_types: ["card", "twint"],
       line_items,
+      // Les coordonnées de livraison ont déjà été saisies sur notre propre
+      // page (pas besoin de les redemander sur Stripe) : on les attache en
+      // metadata pour les retrouver dans le dashboard Stripe au moment de
+      // préparer l'envoi.
+      metadata: {
+        prenom: delivery.firstName,
+        nom: delivery.lastName,
+        telephone: delivery.phone,
+        adresse: `${delivery.street}, ${delivery.postalCode} ${delivery.city}`,
+      },
       success_url: `${origin}/commande/succes?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/commande/annulee`,
     });

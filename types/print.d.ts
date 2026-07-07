@@ -49,3 +49,14 @@ export type CartItem = {
   unitPrice: number;
   quantity: number;
 };
+
+// Coordonnées de livraison saisies avant paiement, sur la page
+// /commande/livraison.
+export type DeliveryInfo = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  street: string;
+  postalCode: string;
+  city: string;
+};

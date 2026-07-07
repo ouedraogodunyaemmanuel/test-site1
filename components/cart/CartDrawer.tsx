@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import Link from "next/link";
 import { useCart } from "./CartContext";
 import { CartLine } from "./CartLine";
 import { formaterPrixCHF } from "@/lib/pricing";
@@ -9,34 +10,6 @@ import { formaterPrixCHF } from "@/lib/pricing";
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, totalPrice } =
     useCart();
-  const [enCoursDePaiement, setEnCoursDePaiement] = useState(false);
-  const [erreurPaiement, setErreurPaiement] = useState<string | null>(null);
-
-  // Demande au serveur de créer une session de paiement Stripe, puis
-  // redirige le navigateur vers la page de paiement hébergée par Stripe.
-  // Le prix n'est jamais envoyé au serveur comme une vérité : il sera
-  // recalculé là-bas à partir du format et du cadre de chaque article.
-  async function handleCheckout() {
-    setErreurPaiement(null);
-    setEnCoursDePaiement(true);
-    try {
-      const reponse = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
-      });
-      const donnees = await reponse.json();
-      if (!reponse.ok || !donnees.url) {
-        throw new Error(donnees.error ?? "Le paiement n'a pas pu être initié.");
-      }
-      window.location.href = donnees.url;
-    } catch (error) {
-      setErreurPaiement(
-        error instanceof Error ? error.message : "Une erreur est survenue."
-      );
-      setEnCoursDePaiement(false);
-    }
-  }
 
   // Ferme le panier avec la touche Échap, pour une navigation clavier correcte.
   useEffect(() => {
@@ -99,17 +72,13 @@ export function CartDrawer() {
               <span>Total</span>
               <span>{formaterPrixCHF(totalPrice)}</span>
             </div>
-            {erreurPaiement && (
-              <p className="mt-3 text-sm text-red-600">{erreurPaiement}</p>
-            )}
-            <button
-              type="button"
-              onClick={handleCheckout}
-              disabled={enCoursDePaiement}
-              className="mt-4 w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
+            <Link
+              href="/commande/livraison"
+              onClick={closeCart}
+              className="mt-4 block w-full bg-stone-900 px-6 py-3 text-center text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700"
             >
-              {enCoursDePaiement ? "Redirection en cours…" : "Payer"}
-            </button>
+              Payer
+            </Link>
           </div>
         )}
       </div>
