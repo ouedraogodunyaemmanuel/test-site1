@@ -1,6 +1,6 @@
 import type { Print } from "@/types/print";
 import type { CategoryFilter, CategoryFilterOption } from "@/types/CategoryFilter";
-import { PrintCard } from "./PrintCard";
+import { JustifiedGallery } from "./JustifiedGallery";
 
 export function GallerySection({
   filtres,
@@ -37,14 +37,8 @@ export function GallerySection({
         </div>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {tirages.map((tirage) => (
-          <PrintCard
-            key={tirage.id}
-            tirage={tirage}
-            onOuvrir={() => onOuvrirTirage(tirage)}
-          />
-        ))}
+      <div className="mt-12">
+        <JustifiedGallery tirages={tirages} onOuvrirTirage={onOuvrirTirage} />
       </div>
     </section>
   );

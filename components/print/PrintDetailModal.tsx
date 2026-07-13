@@ -25,9 +25,8 @@ export function PrintDetailModal({
   const { addItem, openCart } = useCart();
   const [formatSelectionne, setFormatSelectionne] = useState(FORMATS[0].value);
   const [finitionSelectionnee, setFinitionSelectionnee] = useState(FINITIONS[0].value);
-  // "blanc" est le cadre affiché par défaut à l'ouverture de la
-  // modale, plutôt que le premier élément de CADRES (qui est
-  // "aucun").
+  // "blanc" is the frame shown by default when the modal opens,
+  // rather than the first element of CADRES (which is "aucun").
   const [cadreSelectionne, setCadreSelectionne] = useState(
     CADRES.find((option) => option.value === "blanc")?.value ?? CADRES[0].value
   );

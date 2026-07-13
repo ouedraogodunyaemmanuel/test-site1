@@ -20,12 +20,22 @@ export function PrintImage({
   priority,
   containerClassName = "",
   imageClassName = "",
-  // "cover" fills the frame and crops what doesn't fit — good for a
-  // uniform gallery grid. "contain" always shows the photo in full,
-  // with a bit of white margin around it — needed here because our
-  // photos already have a picture frame drawn into them, and cropping
-  // could cut that frame off.
+  // "cover" fills the frame and crops what doesn't fit. "contain"
+  // always shows the photo in full, with a bit of white margin
+  // around it — needed in the detail modal because our photos already
+  // have a picture frame drawn into them, and cropping could cut that
+  // frame off.
   ajustement = "cover",
+  // "auto" (default): the box sizes itself (aspect-ratio guess, then
+  // the photo's real ratio once known). "rempli": the box just fills
+  // 100% of whatever size its parent already gave it — used by the
+  // justified gallery layout, which computes each photo's exact pixel
+  // box itself from its real ratio, so there's nothing left to crop.
+  dimensionnement = "auto",
+  // Reports the photo's real width/height ratio once loaded, so a
+  // parent (like the justified gallery) can lay out photos using
+  // their real proportions.
+  onRatioConnu,
 }: {
   src: string;
   alt: string;
@@ -34,6 +44,8 @@ export function PrintImage({
   containerClassName?: string;
   imageClassName?: string;
   ajustement?: "cover" | "contain";
+  dimensionnement?: "auto" | "rempli";
+  onRatioConnu?: (ratio: number) => void;
 }) {
   // Real width / real height, known only once the browser has loaded
   // the image. Used in "contain" mode to make the box match the photo
@@ -51,6 +63,32 @@ export function PrintImage({
   // same size.
   const [ratioReel, setRatioReel] = useState<number | null>(null);
   const [estCharge, setEstCharge] = useState(false);
+
+  function gererChargement(evenement: React.SyntheticEvent<HTMLImageElement>) {
+    const cible = evenement.currentTarget;
+    const ratio = cible.naturalWidth / cible.naturalHeight;
+    setRatioReel((ratioActuel) => ratioActuel ?? ratio);
+    setEstCharge(true);
+    onRatioConnu?.(ratio);
+  }
+
+  if (dimensionnement === "rempli") {
+    return (
+      <div className={`relative h-full w-full overflow-hidden bg-stone-200 ${containerClassName}`}>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes={sizes}
+          onLoad={gererChargement}
+          className={`object-cover transition-opacity duration-300 ${
+            estCharge ? "opacity-100" : "opacity-0"
+          } ${imageClassName}`}
+        />
+      </div>
+    );
+  }
 
   const estPaysage = (ratioReel ?? 2 / 3) >= 1;
   const ratioConnu = ajustement === "contain" && ratioReel !== null;
@@ -70,11 +108,7 @@ export function PrintImage({
         fill
         priority={priority}
         sizes={sizes}
-        onLoad={(evenement) => {
-          const cible = evenement.currentTarget;
-          setRatioReel((ratioActuel) => ratioActuel ?? cible.naturalWidth / cible.naturalHeight);
-          setEstCharge(true);
-        }}
+        onLoad={gererChargement}
         className={`transition-opacity duration-300 ${
           ajustement === "contain" ? "object-contain" : "object-cover"
         } ${estCharge ? "opacity-100" : "opacity-0"} ${imageClassName}`}

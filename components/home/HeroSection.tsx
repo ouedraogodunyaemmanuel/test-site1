@@ -3,12 +3,17 @@ import Image from "next/image";
 export function HeroSection() {
   return (
     <section className="relative flex h-[85vh] min-h-[520px] items-end overflow-hidden">
-      {/* Drop your main photo in /public/images/hero.jpg */}
       <Image
-        src="/images/hero.jpg"
+        src="/images/HeroSection/hero-section.jpg"
         alt="Paysage mis en avant"
         fill
         priority
+        // Serves the original file as-is, bypassing Next.js's image
+        // optimizer (which resizes and recompresses by default — that
+        // was causing the quality loss). Deliberate: this is the only
+        // photo on the site shown this large, so the original file's
+        // weight (~5.4 MB) stays acceptable.
+        unoptimized
         className="object-cover"
       />
       {/* Dark overlay to keep the text readable regardless of the photo */}

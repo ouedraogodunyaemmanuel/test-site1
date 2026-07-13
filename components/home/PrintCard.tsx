@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Print } from "@/types/print";
 import { formaterPrixCHF, PRIX_MINIMUM } from "@/lib/pricing";
 import { obtenirUrlImageTirage } from "@/lib/images";
@@ -7,15 +8,24 @@ import { PrintImage } from "@/components/shared/PrintImage";
 export function PrintCard({
   tirage,
   onOuvrir,
+  style,
+  sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
+  onRatioConnu,
 }: {
   tirage: Print;
   onOuvrir: () => void;
+  // Exact pixel size computed by the justified gallery layout, so the
+  // photo displays at its real aspect ratio instead of a fixed shape.
+  style?: CSSProperties;
+  sizes?: string;
+  onRatioConnu?: (ratio: number) => void;
 }) {
   return (
     <button
       type="button"
       onClick={onOuvrir}
-      className="group relative block text-left transition-transform active:scale-[0.98]"
+      style={style}
+      className="group relative block overflow-hidden text-left transition-transform active:scale-[0.98]"
     >
       <PrintImage
         // No options chosen yet at this stage (just hovering the
@@ -23,7 +33,9 @@ export function PrintCard({
         // format doesn't matter here since "aucun" ignores it.
         src={obtenirUrlImageTirage(tirage, "aucun", FORMATS[0].value)}
         alt={tirage.title}
-        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        sizes={sizes}
+        dimensionnement="rempli"
+        onRatioConnu={onRatioConnu}
         imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
       />
       {/* Overlay revealed on hover: print title and starting price */}
