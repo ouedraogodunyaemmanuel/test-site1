@@ -3,7 +3,7 @@ import Image from "next/image";
 export function HeroSection() {
   return (
     <section className="relative flex h-[85vh] min-h-[520px] items-end overflow-hidden">
-      {/* Déposer la photo principale dans /public/images/hero.jpg */}
+      {/* Drop your main photo in /public/images/hero.jpg */}
       <Image
         src="/images/hero.jpg"
         alt="Paysage mis en avant"
@@ -11,7 +11,7 @@ export function HeroSection() {
         priority
         className="object-cover"
       />
-      {/* Superposition sombre pour garder le texte lisible quelle que soit la photo */}
+      {/* Dark overlay to keep the text readable regardless of the photo */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
       <div className="relative mx-auto w-full max-w-6xl px-6 pb-16 sm:px-10 sm:pb-24">
         <h1 className="max-w-xl font-serif text-4xl leading-tight text-stone-50 sm:text-5xl">

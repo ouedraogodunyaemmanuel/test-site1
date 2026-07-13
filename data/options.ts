@@ -1,20 +1,20 @@
-import type { OptionSelection } from "@/types/print";
+import type { SelectOption } from "@/types/print";
 
-// Options personnalisables proposées lors de l'achat d'un tirage.
-export const FORMATS: OptionSelection[] = [
-  { valeur: "20x30", libelle: "20 × 30 cm" },
-  { valeur: "40x60", libelle: "40 × 60 cm" },
-  { valeur: "60x90", libelle: "60 × 90 cm" },
+// Customizable options offered when purchasing a print.
+export const FORMATS: SelectOption[] = [
+  { value: "20x30", label: "20 × 30 cm" },
+  { value: "40x60", label: "40 × 60 cm" },
+  { value: "60x90", label: "60 × 90 cm" },
 ];
 
-export const FINITIONS: OptionSelection[] = [
-  { valeur: "mat", libelle: "Mat" },
-  { valeur: "brillant", libelle: "Brillant" },
+export const FINITIONS: SelectOption[] = [
+  { value: "mat", label: "Mat" },
+  { value: "brillant", label: "Brillant" },
 ];
 
-export const CADRES: OptionSelection[] = [
-  { valeur: "aucun", libelle: "Pas de cadre" },
-  { valeur: "noir", libelle: "Alu noir" },
-  { valeur: "cuivre", libelle: "Alu cuivre" },
-  { valeur: "argente", libelle: "Alu argenté" },
+export const CADRES: SelectOption[] = [
+  { value: "aucun", label: "Pas de cadre" },
+  { value: "noir", label: "Alu noir" },
+  { value: "cuivre", label: "Alu cuivre" },
+  { value: "argente", label: "Alu argenté" },
 ];

@@ -2,10 +2,10 @@ import Link from "next/link";
 import { stripe } from "@/lib/stripe";
 import { ClearOrderOnSuccess } from "@/components/checkout/ClearOrderOnSuccess";
 
-// Cette page tourne côté serveur : elle interroge directement Stripe pour
-// vérifier que le paiement a réellement abouti, plutôt que de faire
-// confiance au simple fait que le navigateur ait été redirigé ici (une
-// redirection peut être rejouée ou falsifiée, une vérification serveur non).
+// This page runs server-side: it queries Stripe directly to verify
+// that the payment actually succeeded, rather than trusting the mere
+// fact that the browser was redirected here (a redirect can be
+// replayed or forged, a server-side check cannot).
 export default async function PageSucces({
   searchParams,
 }: {

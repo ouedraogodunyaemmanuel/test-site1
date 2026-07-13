@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { FiltreCategorie, Tirage } from "@/types/print";
+import type { Print } from "@/types/print";
+import type { CategoryFilter } from "@/types/CategoryFilter";
 import { FILTRES, TIRAGES } from "@/data/prints";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -12,13 +13,13 @@ import { ContactSection } from "@/components/home/ContactSection";
 import { PrintDetailModal } from "@/components/print/PrintDetailModal";
 
 export default function Home() {
-  const [categorieActive, setCategorieActive] = useState<FiltreCategorie>("tous");
-  const [tirageOuvert, setTirageOuvert] = useState<Tirage | null>(null);
+  const [categorieActive, setCategorieActive] = useState<CategoryFilter>("tous");
+  const [tirageOuvert, setTirageOuvert] = useState<Print | null>(null);
 
   const tiragesAffiches =
     categorieActive === "tous"
       ? TIRAGES
-      : TIRAGES.filter((tirage) => tirage.categorie === categorieActive);
+      : TIRAGES.filter((tirage) => tirage.category === categorieActive);
 
   return (
     <div className="flex flex-1 flex-col bg-stone-50 font-sans text-stone-900">

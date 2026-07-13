@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
-// Comme lib/stripe.ts : jamais importé dans un composant client, donc la
-// clé ne quitte jamais le serveur.
+// Like lib/stripe.ts: never imported in a client component, so the
+// key never leaves the server.
 const cleApi = process.env.RESEND_API_KEY;
 
 if (!cleApi) {

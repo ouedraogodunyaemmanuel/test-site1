@@ -1,4 +1,5 @@
-import type { FiltreCategorie, OptionFiltreCategorie, Tirage } from "@/types/print";
+import type { Print } from "@/types/print";
+import type { CategoryFilter, CategoryFilterOption } from "@/types/CategoryFilter";
 import { PrintCard } from "./PrintCard";
 
 export function GallerySection({
@@ -8,11 +9,11 @@ export function GallerySection({
   tirages,
   onOuvrirTirage,
 }: {
-  filtres: OptionFiltreCategorie[];
-  categorieActive: FiltreCategorie;
-  onChangementCategorie: (categorie: FiltreCategorie) => void;
-  tirages: Tirage[];
-  onOuvrirTirage: (tirage: Tirage) => void;
+  filtres: CategoryFilterOption[];
+  categorieActive: CategoryFilter;
+  onChangementCategorie: (categorie: CategoryFilter) => void;
+  tirages: Print[];
+  onOuvrirTirage: (tirage: Print) => void;
 }) {
   return (
     <section id="gallery" className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-10">
@@ -21,16 +22,16 @@ export function GallerySection({
         <div className="flex flex-wrap gap-2">
           {filtres.map((filtre) => (
             <button
-              key={filtre.valeur}
+              key={filtre.value}
               type="button"
-              onClick={() => onChangementCategorie(filtre.valeur)}
+              onClick={() => onChangementCategorie(filtre.value)}
               className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-                categorieActive === filtre.valeur
+                categorieActive === filtre.value
                   ? "border-stone-900 bg-stone-900 text-stone-50"
                   : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
               }`}
             >
-              {filtre.libelle}
+              {filtre.label}
             </button>
           ))}
         </div>

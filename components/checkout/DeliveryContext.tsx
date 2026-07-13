@@ -2,50 +2,50 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { ValeurContexteLivraison, InfosLivraison } from "@/types/print";
+import type { DeliveryContextValue, DeliveryInfo } from "@/types/Delivery";
 
 const DELIVERY_STORAGE_KEY = "deo-creation-livraison";
 
-const infosVides: InfosLivraison = {
-  prenom: "",
-  nom: "",
-  telephone: "",
-  rue: "",
-  codePostal: "",
-  ville: "",
+const emptyInfo: DeliveryInfo = {
+  firstName: "",
+  lastName: "",
+  phone: "",
+  street: "",
+  postalCode: "",
+  city: "",
 };
 
-const DeliveryContext = createContext<ValeurContexteLivraison | null>(null);
+const DeliveryContext = createContext<DeliveryContextValue | null>(null);
 
 export function DeliveryProvider({ children }: { children: ReactNode }) {
-  const [livraison, setLivraisonEtat] = useState<InfosLivraison>(infosVides);
-  const [estPret, setEstPret] = useState(false);
+  const [delivery, setDeliveryState] = useState<DeliveryInfo>(emptyInfo);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const sauvegarde = window.localStorage.getItem(DELIVERY_STORAGE_KEY);
-    if (sauvegarde) {
-      setLivraisonEtat(JSON.parse(sauvegarde));
+    const saved = window.localStorage.getItem(DELIVERY_STORAGE_KEY);
+    if (saved) {
+      setDeliveryState(JSON.parse(saved));
     }
-    setEstPret(true);
+    setIsReady(true);
   }, []);
 
   useEffect(() => {
-    if (estPret) {
-      window.localStorage.setItem(DELIVERY_STORAGE_KEY, JSON.stringify(livraison));
+    if (isReady) {
+      window.localStorage.setItem(DELIVERY_STORAGE_KEY, JSON.stringify(delivery));
     }
-  }, [livraison, estPret]);
+  }, [delivery, isReady]);
 
-  function definirLivraison(infos: InfosLivraison) {
-    setLivraisonEtat(infos);
+  function setDelivery(info: DeliveryInfo) {
+    setDeliveryState(info);
   }
 
-  function viderLivraison() {
-    setLivraisonEtat(infosVides);
+  function clearDelivery() {
+    setDeliveryState(emptyInfo);
   }
 
   return (
     <DeliveryContext.Provider
-      value={{ livraison, definirLivraison, viderLivraison, estPret }}
+      value={{ delivery, setDelivery, clearDelivery, isReady }}
     >
       {children}
     </DeliveryContext.Provider>

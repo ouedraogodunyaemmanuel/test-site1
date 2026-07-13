@@ -3,10 +3,10 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { resend } from "@/lib/resend";
 
-// Stripe notifie cette route directement depuis ses serveurs, dès qu'un
-// paiement aboutit — indépendamment de ce que fait ensuite le navigateur
-// du client (contrairement à la page /commande/succes, qui dépend d'une
-// redirection qui peut ne jamais arriver).
+// Stripe notifies this route directly from its servers as soon as a
+// payment succeeds — independent of whatever the client's browser
+// does afterwards (unlike the /commande/succes page, which depends on
+// a redirect that might never arrive).
 export async function POST(requete: Request) {
   const secretWebhook = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secretWebhook) {
@@ -15,9 +15,9 @@ export async function POST(requete: Request) {
     );
   }
 
-  // Le corps brut (non parsé) est indispensable pour vérifier la
-  // signature : la moindre modification d'un octet invaliderait la
-  // vérification.
+  // The raw (unparsed) body is essential to verify the signature: the
+  // slightest modification of a single byte would invalidate the
+  // check.
   const corpsBrut = await requete.text();
   const signature = requete.headers.get("stripe-signature");
 
@@ -27,9 +27,9 @@ export async function POST(requete: Request) {
 
   let evenement: Stripe.Event;
   try {
-    // C'est cette vérification qui garantit que la requête vient
-    // vraiment de Stripe, et non d'un tiers qui simulerait un paiement
-    // réussi pour se faire livrer gratuitement.
+    // This check is what guarantees the request really comes from
+    // Stripe, and not from a third party simulating a successful
+    // payment to get a free delivery.
     evenement = stripe.webhooks.constructEvent(corpsBrut, signature, secretWebhook);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Signature invalide.";

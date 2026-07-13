@@ -1,28 +1,29 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { GRILLE_PRIX, calculerPrix } from "@/lib/pricing";
-import type { ArticlePanier, InfosLivraison } from "@/types/print";
+import type { CartItem } from "@/types/Cart";
+import type { DeliveryInfo } from "@/types/Delivery";
 
-// Nombre maximum d'exemplaires acceptés pour une même ligne du panier,
-// pour éviter une commande absurde envoyée par erreur ou par abus.
+// Maximum number of copies accepted for a single cart line, to avoid
+// an absurd order sent by mistake or abuse.
 const QUANTITE_MAXIMUM = 20;
 
 export async function POST(requete: Request) {
-  const { articles, livraison }: { articles: ArticlePanier[]; livraison?: InfosLivraison } =
+  const { items, delivery }: { items: CartItem[]; delivery?: DeliveryInfo } =
     await requete.json();
 
-  if (!Array.isArray(articles) || articles.length === 0) {
+  if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "Le panier est vide." }, { status: 400 });
   }
 
   if (
-    !livraison ||
-    !livraison.prenom ||
-    !livraison.nom ||
-    !livraison.telephone ||
-    !livraison.rue ||
-    !livraison.codePostal ||
-    !livraison.ville
+    !delivery ||
+    !delivery.firstName ||
+    !delivery.lastName ||
+    !delivery.phone ||
+    !delivery.street ||
+    !delivery.postalCode ||
+    !delivery.city
   ) {
     return NextResponse.json(
       { error: "Les informations de livraison sont incomplètes." },
@@ -33,40 +34,40 @@ export async function POST(requete: Request) {
   const origine = requete.headers.get("origin") ?? new URL(requete.url).origin;
 
   try {
-    const articlesLignes = articles.map((article) => {
-      // Le format doit exister dans notre grille de prix : sinon, la
-      // requête est rejetée plutôt que de planter ou d'accepter un prix
-      // arbitraire.
-      if (!(article.format in GRILLE_PRIX)) {
-        throw new Error(`Format inconnu : ${article.format}`);
+    const lineItems = items.map((item) => {
+      // The format must exist in our pricing grid: otherwise, the
+      // request is rejected rather than crashing or accepting an
+      // arbitrary price.
+      if (!(item.format in GRILLE_PRIX)) {
+        throw new Error(`Format inconnu : ${item.format}`);
       }
       if (
-        !Number.isInteger(article.quantite) ||
-        article.quantite < 1 ||
-        article.quantite > QUANTITE_MAXIMUM
+        !Number.isInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > QUANTITE_MAXIMUM
       ) {
-        throw new Error(`Quantité invalide pour ${article.titre}`);
+        throw new Error(`Quantité invalide pour ${item.title}`);
       }
 
-      // Le prix n'est jamais lu depuis `article.prixUnitaire` (envoyé par
-      // le navigateur) : il est toujours recalculé ici à partir du format
-      // et du cadre, pour qu'un prix modifié côté client n'ait aucun effet.
-      const prixUnitaire = calculerPrix(article.format, article.cadre);
+      // The price is never read from `item.unitPrice` (sent by
+      // the browser): it is always recalculated here from the format
+      // and frame, so that a price tampered with client-side has no effect.
+      const unitPrice = calculerPrix(item.format, item.frame);
 
       return {
-        quantity: article.quantite,
+        quantity: item.quantity,
         price_data: {
           currency: "chf",
-          unit_amount: Math.round(prixUnitaire * 100),
+          unit_amount: Math.round(unitPrice * 100),
           product_data: {
-            name: article.titre,
-            description: `${article.libelleFormat} · ${article.libelleFinition} · ${article.libelleCadre}`,
-            // Stripe a besoin d'une URL absolue et publiquement
-            // accessible : en local (localhost), Stripe ne pourra pas la
-            // charger et n'affichera simplement pas d'image, sans
-            // erreur — ça fonctionnera normalement une fois le site
-            // déployé avec un vrai nom de domaine.
-            images: [`${origine}${article.image}`],
+            name: item.title,
+            description: `${item.formatLabel} · ${item.finishLabel} · ${item.frameLabel}`,
+            // Stripe needs an absolute, publicly accessible URL:
+            // locally (localhost), Stripe won't be able to load it and
+            // will simply show no image, without error — it will work
+            // normally once the site is deployed with a real domain
+            // name.
+            images: [`${origine}${item.image}`],
           },
         },
       };
@@ -74,25 +75,25 @@ export async function POST(requete: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      // Sans ce réglage, Stripe devine la langue depuis le navigateur du
-      // client ("auto") plutôt que d'utiliser la langue du tableau de
-      // bord — comme le site est en français, on la fixe explicitement.
+      // Without this setting, Stripe guesses the language from the
+      // client's browser ("auto") instead of using the dashboard's
+      // language — since the site is in French, we set it explicitly.
       locale: "fr",
-      // Pas de `payment_method_types` ici : Stripe choisit dynamiquement
-      // les moyens de paiement à afficher (carte, TWINT...) selon le
-      // client et la transaction. Les moyens acceptés se gèrent depuis le
-      // Dashboard Stripe (Paramètres → Moyens de paiement), pas dans le
+      // No `payment_method_types` here: Stripe dynamically chooses
+      // which payment methods to show (card, TWINT...) based on the
+      // client and the transaction. Accepted methods are managed from
+      // the Stripe Dashboard (Settings → Payment methods), not in the
       // code.
-      line_items: articlesLignes,
-      // Les coordonnées de livraison ont déjà été saisies sur notre propre
-      // page (pas besoin de les redemander sur Stripe) : on les attache en
-      // metadata pour les retrouver dans le dashboard Stripe au moment de
-      // préparer l'envoi.
+      line_items: lineItems,
+      // The delivery details have already been entered on our own
+      // page (no need to ask again on Stripe): we attach them as
+      // metadata to find them in the Stripe dashboard when it's time
+      // to prepare the shipment.
       metadata: {
-        prenom: livraison.prenom,
-        nom: livraison.nom,
-        telephone: livraison.telephone,
-        adresse: `${livraison.rue}, ${livraison.codePostal} ${livraison.ville}`,
+        prenom: delivery.firstName,
+        nom: delivery.lastName,
+        telephone: delivery.phone,
+        adresse: `${delivery.street}, ${delivery.postalCode} ${delivery.city}`,
       },
       success_url: `${origine}/commande/succes?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origine}/commande/annulee`,

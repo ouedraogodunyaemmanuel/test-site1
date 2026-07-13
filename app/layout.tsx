@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Police à empattements réservée aux titres, pour une ambiance « galerie d'art ».
+// Serif font reserved for headings, for an "art gallery" feel.
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],

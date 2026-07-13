@@ -1,7 +1,7 @@
 import { ACompleter } from "@/components/shared/ACompleter";
 
-// Adresse de contact provisoire : à remplacer par la vraie adresse avant
-// mise en ligne (voir le marqueur jaune ci-dessous).
+// Placeholder contact address: replace with the real address before
+// going live (see the yellow marker below).
 const EMAIL_CONTACT = "ouedraogodunya@gmail.com";
 
 export function ContactSection() {

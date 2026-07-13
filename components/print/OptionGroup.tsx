@@ -1,7 +1,7 @@
-import type { OptionSelection } from "@/types/print";
+import type { SelectOption } from "@/types/print";
 
-// Un groupe d'options personnalisables : un bouton affichant le choix
-// actuel, qui déplie un sous-menu de valeurs possibles au clic.
+// A customizable option group: a button showing the current choice,
+// which expands a submenu of possible values on click.
 export function OptionGroup({
   titre,
   options,
@@ -11,15 +11,15 @@ export function OptionGroup({
   onSelectionner,
 }: {
   titre: string;
-  options: OptionSelection[];
+  options: SelectOption[];
   valeurActuelle: string;
   estOuvert: boolean;
   onBasculer: () => void;
   onSelectionner: (valeur: string) => void;
 }) {
   const libelleActuel = options.find(
-    (option) => option.valeur === valeurActuelle
-  )?.libelle;
+    (option) => option.value === valeurActuelle
+  )?.label;
 
   return (
     <div className="border-b border-stone-200 py-3 first:border-t">
@@ -46,19 +46,19 @@ export function OptionGroup({
         <div className="mt-3 flex flex-wrap gap-2">
           {options.map((option) => (
             <button
-              key={option.valeur}
+              key={option.value}
               type="button"
               onClick={() => {
-                onSelectionner(option.valeur);
+                onSelectionner(option.value);
                 onBasculer();
               }}
               className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                option.valeur === valeurActuelle
+                option.value === valeurActuelle
                   ? "border-stone-900 bg-stone-900 text-stone-50"
                   : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
               }`}
             >
-              {option.libelle}
+              {option.label}
             </button>
           ))}
         </div>

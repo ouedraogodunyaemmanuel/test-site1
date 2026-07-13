@@ -1,8 +1,8 @@
 import Stripe from "stripe";
 
-// Ce fichier n'est jamais importé par du code exécuté dans le navigateur
-// (uniquement par des routes API et des Server Components), donc la clé
-// secrète ne quitte jamais le serveur.
+// This file is never imported by code that runs in the browser
+// (only by API routes and Server Components), so the secret key
+// never leaves the server.
 const cleSecrete = process.env.STRIPE_SECRET_KEY;
 
 if (!cleSecrete) {

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-// Mise en page commune aux pages légales (CGV, confidentialité), pour ne
-// pas dupliquer la structure de titre + lien retour dans chaque page.
+// Shared layout for legal pages (terms of sale, privacy policy), so
+// the title + back-link structure isn't duplicated on every page.
 export function LegalPage({
   title,
   children,

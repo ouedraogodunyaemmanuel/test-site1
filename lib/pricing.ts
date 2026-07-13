@@ -1,12 +1,12 @@
-// Grille de prix (CHF) par format, selon qu'un cadre est choisi ou non.
-// Le prix ne dépend pas de la photo : il est le même pour tout le catalogue.
+// Price grid (CHF) by format, depending on whether a frame is chosen.
+// The price doesn't depend on the photo: it's the same across the whole catalog.
 export const GRILLE_PRIX: Record<string, { sansCadre: number; avecCadre: number }> = {
   "20x30": { sansCadre: 39, avecCadre: 69 },
   "40x60": { sansCadre: 59, avecCadre: 99 },
   "60x90": { sansCadre: 109, avecCadre: 209 },
 };
 
-// Le prix affiché sur les cartes ("à partir de ..."), soit le tarif le plus bas du catalogue.
+// The price shown on the cards ("from ..."), i.e. the lowest rate in the catalog.
 export const PRIX_MINIMUM = GRILLE_PRIX["20x30"].sansCadre;
 
 export function calculerPrix(format: string, cadre: string): number {
@@ -14,8 +14,8 @@ export function calculerPrix(format: string, cadre: string): number {
   return cadre === "aucun" ? prixFormat.sansCadre : prixFormat.avecCadre;
 }
 
-// Convention suisse : un montant rond s'affiche "109.-", un montant avec
-// centimes s'affiche "34.90".
+// Swiss convention: a round amount is shown as "109.-", an amount with
+// cents is shown as "34.90".
 export function formaterPrixCHF(montant: number): string {
   return Number.isInteger(montant)
     ? `CHF ${montant}.-`

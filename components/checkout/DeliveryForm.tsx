@@ -8,26 +8,26 @@ import { useDelivery } from "./DeliveryContext";
 
 export function DeliveryForm() {
   const routeur = useRouter();
-  const { articles, estPret: panierPret } = useCart();
-  const { livraison, definirLivraison, estPret: livraisonPrete } = useDelivery();
-  const [formulaire, setFormulaire] = useState(livraison);
+  const { items, isReady: cartReady } = useCart();
+  const { delivery, setDelivery, isReady: deliveryReady } = useDelivery();
+  const [formulaire, setFormulaire] = useState(delivery);
 
-  // Un panier vide n'a rien à livrer : on attend que le panier soit
-  // chargé depuis le navigateur avant de vérifier, pour ne pas rediriger
-  // à tort au tout premier rendu (voir estPret sur CartContext).
+  // An empty cart has nothing to deliver: we wait for the cart to be
+  // loaded from the browser before checking, so we don't redirect
+  // wrongly on the very first render (see isReady on CartContext).
   useEffect(() => {
-    if (panierPret && articles.length === 0) {
+    if (cartReady && items.length === 0) {
       routeur.replace("/");
     }
-  }, [panierPret, articles, routeur]);
+  }, [cartReady, items, routeur]);
 
-  // Pré-remplit le formulaire si des coordonnées avaient déjà été saisies
-  // lors d'une visite précédente.
+  // Pre-fills the form if delivery details were already entered
+  // during a previous visit.
   useEffect(() => {
-    if (livraisonPrete) {
-      setFormulaire(livraison);
+    if (deliveryReady) {
+      setFormulaire(delivery);
     }
-  }, [livraisonPrete, livraison]);
+  }, [deliveryReady, delivery]);
 
   function gererChangement(champ: keyof typeof formulaire) {
     return (evenement: ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ export function DeliveryForm() {
 
   function gererEnvoi(evenement: FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
-    definirLivraison(formulaire);
+    setDelivery(formulaire);
     routeur.push("/commande/recapitulatif");
   }
 
@@ -46,42 +46,42 @@ export function DeliveryForm() {
       <div className="grid gap-6 sm:grid-cols-2">
         <Champ
           label="Prénom"
-          id="prenom"
-          value={formulaire.prenom}
-          onChange={gererChangement("prenom")}
+          id="firstName"
+          value={formulaire.firstName}
+          onChange={gererChangement("firstName")}
         />
         <Champ
           label="Nom"
-          id="nom"
-          value={formulaire.nom}
-          onChange={gererChangement("nom")}
+          id="lastName"
+          value={formulaire.lastName}
+          onChange={gererChangement("lastName")}
         />
       </div>
       <Champ
         label="Téléphone"
-        id="telephone"
+        id="phone"
         type="tel"
-        value={formulaire.telephone}
-        onChange={gererChangement("telephone")}
+        value={formulaire.phone}
+        onChange={gererChangement("phone")}
       />
       <Champ
         label="Adresse (rue et numéro)"
-        id="rue"
-        value={formulaire.rue}
-        onChange={gererChangement("rue")}
+        id="street"
+        value={formulaire.street}
+        onChange={gererChangement("street")}
       />
       <div className="grid gap-6 sm:grid-cols-[120px_1fr]">
         <Champ
           label="NPA"
-          id="codePostal"
-          value={formulaire.codePostal}
-          onChange={gererChangement("codePostal")}
+          id="postalCode"
+          value={formulaire.postalCode}
+          onChange={gererChangement("postalCode")}
         />
         <Champ
           label="Ville"
-          id="ville"
-          value={formulaire.ville}
-          onChange={gererChangement("ville")}
+          id="city"
+          value={formulaire.city}
+          onChange={gererChangement("city")}
         />
       </div>
       <button
