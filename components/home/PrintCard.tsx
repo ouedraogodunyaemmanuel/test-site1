@@ -15,7 +15,7 @@ export function PrintCard({
     <button
       type="button"
       onClick={onOuvrir}
-      className="group relative aspect-[4/5] overflow-hidden bg-stone-200 text-left"
+      className="group relative aspect-[4/5] overflow-hidden bg-stone-200 text-left transition-transform active:scale-[0.98]"
     >
       <Image
         // No options chosen yet at this stage (just hovering the

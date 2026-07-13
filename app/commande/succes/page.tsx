@@ -43,7 +43,7 @@ export default async function PageSucces({
       )}
       <Link
         href="/"
-        className="mt-4 border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition-colors hover:border-stone-900 hover:text-stone-900"
+        className="mt-4 border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
       >
         Retour à la boutique
       </Link>

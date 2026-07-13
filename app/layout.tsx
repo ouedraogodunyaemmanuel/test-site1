@@ -42,7 +42,7 @@ export default function RootLayout({
           <DeliveryProvider>
             <CartButton />
             <CartDrawer />
-            {children}
+            <div className="page-enter flex flex-1 flex-col">{children}</div>
           </DeliveryProvider>
         </CartProvider>
       </body>

@@ -27,7 +27,7 @@ export function OptionGroup({
         type="button"
         onClick={onBasculer}
         aria-expanded={estOuvert}
-        className="flex w-full items-center justify-between text-left"
+        className="flex w-full items-center justify-between text-left transition-transform active:scale-[0.98]"
       >
         <span className="text-sm text-stone-500">{titre}</span>
         <span className="flex items-center gap-2 text-sm text-stone-900">
@@ -52,7 +52,7 @@ export function OptionGroup({
                 onSelectionner(option.value);
                 onBasculer();
               }}
-              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+              className={`rounded-full border px-3 py-1.5 text-sm transition active:scale-[0.95] ${
                 option.value === valeurActuelle
                   ? "border-stone-900 bg-stone-900 text-stone-50"
                   : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"

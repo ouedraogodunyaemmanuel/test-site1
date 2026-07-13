@@ -1,13 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
 import { obtenirUrlImageTirage } from "@/lib/images";
 import { FORMATS, FINITIONS, CADRES } from "@/data/options";
 import { useCart } from "@/components/cart/CartContext";
 import { OptionGroup } from "./OptionGroup";
+
+// Duration (ms) of the fade/scale transition — must match the
+// `duration-200` Tailwind class used below, since we rely on a timer
+// (not a CSS transitionend event) to know when it's safe to actually
+// unmount the modal.
+const DUREE_ANIMATION_MS = 200;
 
 export function PrintDetailModal({
   tirage,
@@ -21,6 +27,25 @@ export function PrintDetailModal({
   const [finitionSelectionnee, setFinitionSelectionnee] = useState(FINITIONS[0].value);
   const [cadreSelectionne, setCadreSelectionne] = useState(CADRES[0].value);
   const [groupeOuvert, setGroupeOuvert] = useState<OptionGroupName | null>(null);
+
+  // Controls the fade/scale-in and fade/scale-out animation: the modal
+  // starts hidden, becomes visible right after mounting, and is marked
+  // "closing" for the short time the exit transition plays before the
+  // parent actually removes it from the page.
+  const [estVisible, setEstVisible] = useState(false);
+  const [enFermeture, setEnFermeture] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEstVisible(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  // Plays the exit transition, then tells the parent to actually
+  // unmount the modal once it's finished.
+  const fermerAvecAnimation = useCallback(() => {
+    setEnFermeture(true);
+    setTimeout(onFermer, DUREE_ANIMATION_MS);
+  }, [onFermer]);
 
   function basculerGroupe(nom: OptionGroupName) {
     setGroupeOuvert((current) => (current === nom ? null : nom));
@@ -44,7 +69,7 @@ export function PrintDetailModal({
       frameLabel: trouverLabel(CADRES, cadreSelectionne),
       unitPrice: calculerPrix(formatSelectionne, cadreSelectionne),
     });
-    onFermer();
+    fermerAvecAnimation();
     openCart();
   }
 
@@ -52,12 +77,12 @@ export function PrintDetailModal({
   useEffect(() => {
     function gererTouche(evenement: KeyboardEvent) {
       if (evenement.key === "Escape") {
-        onFermer();
+        fermerAvecAnimation();
       }
     }
     window.addEventListener("keydown", gererTouche);
     return () => window.removeEventListener("keydown", gererTouche);
-  }, [onFermer]);
+  }, [fermerAvecAnimation]);
 
   // Lock background scrolling while the modal is open, and restore the
   // previous value on close (fixes the page scrolling behind the modal).
@@ -69,16 +94,22 @@ export function PrintDetailModal({
     };
   }, []);
 
+  const estAffiche = estVisible && !enFermeture;
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 sm:p-10"
-      onClick={onFermer}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity duration-200 sm:p-10 ${
+        estAffiche ? "opacity-100" : "opacity-0"
+      }`}
+      onClick={fermerAvecAnimation}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="print-detail-title"
-        className="relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 sm:flex-row"
+        className={`relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 transition-all duration-200 sm:flex-row ${
+          estAffiche ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        }`}
         onClick={(evenement) => evenement.stopPropagation()}
       >
         <div className="relative aspect-[4/5] w-full shrink-0 sm:w-3/5">
@@ -132,14 +163,14 @@ export function PrintDetailModal({
             <button
               type="button"
               onClick={gererAjoutPanier}
-              className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700"
+              className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
             >
               Ajouter au panier
             </button>
             <button
               type="button"
-              onClick={onFermer}
-              className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition-colors hover:border-stone-900 hover:text-stone-900"
+              onClick={fermerAvecAnimation}
+              className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
             >
               Fermer
             </button>

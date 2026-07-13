@@ -15,7 +15,7 @@ export function ContactSection() {
         </p>
         <a
           href={`mailto:${EMAIL_CONTACT}`}
-          className="mt-8 inline-flex items-center gap-2 border border-stone-900 px-6 py-3 text-sm tracking-wide text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50"
+          className="mt-8 inline-flex items-center gap-2 border border-stone-900 px-6 py-3 text-sm tracking-wide text-stone-900 transition hover:bg-stone-900 hover:text-stone-50 active:scale-[0.97]"
         >
           {EMAIL_CONTACT}
         </a>

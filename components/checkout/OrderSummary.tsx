@@ -124,7 +124,7 @@ export function OrderSummary() {
         type="button"
         onClick={gererConfirmation}
         disabled={enCoursDePaiement}
-        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         {enCoursDePaiement ? "Redirection en cours…" : "Confirmer et payer"}
       </button>

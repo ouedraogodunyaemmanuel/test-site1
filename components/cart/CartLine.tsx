@@ -36,7 +36,7 @@ export function CartLine({
               type="button"
               onClick={() => onChangementQuantite(article.quantity - 1)}
               aria-label="Diminuer la quantité"
-              className="px-2 py-1 text-stone-600 transition-colors hover:text-stone-900"
+              className="px-2 py-1 text-stone-600 transition hover:text-stone-900 active:scale-[0.9]"
             >
               −
             </button>
@@ -45,7 +45,7 @@ export function CartLine({
               type="button"
               onClick={() => onChangementQuantite(article.quantity + 1)}
               aria-label="Augmenter la quantité"
-              className="px-2 py-1 text-stone-600 transition-colors hover:text-stone-900"
+              className="px-2 py-1 text-stone-600 transition hover:text-stone-900 active:scale-[0.9]"
             >
               +
             </button>

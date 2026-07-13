@@ -86,7 +86,7 @@ export function DeliveryForm() {
       </div>
       <button
         type="submit"
-        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700"
+        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
       >
         Continuer vers le récapitulatif
       </button>

@@ -25,7 +25,7 @@ export function GallerySection({
               key={filtre.value}
               type="button"
               onClick={() => onChangementCategorie(filtre.value)}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`rounded-full border px-4 py-1.5 text-sm transition active:scale-[0.95] ${
                 categorieActive === filtre.value
                   ? "border-stone-900 bg-stone-900 text-stone-50"
                   : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
