@@ -13,8 +13,8 @@ export const FINITIONS: SelectOption[] = [
 ];
 
 export const CADRES: SelectOption[] = [
-  { value: "aucun", label: "Pas de cadre" },
-  { value: "noir", label: "Alu noir" },
-  { value: "cuivre", label: "Alu cuivre" },
-  { value: "argente", label: "Alu argenté" },
+  { value: "aucun", label: "Aucun" },
+  { value: "blanc", label: "Blanc" },
+  { value: "noir", label: "Noir" },
+  { value: "cuivre", label: "Cuivre" },
 ];

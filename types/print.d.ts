@@ -13,7 +13,7 @@ export type Print = {
   // image (no frame, doesn't vary by format) and one image per
   // frame × format combination for the 3 colored frames (e.g.
   // "noir-20x30.jpg", "noir-40x60.jpg", "noir-60x90.jpg", same for
-  // cuivre and argente). See lib/images.ts to resolve the exact
+  // blanc and cuivre). See lib/images.ts to resolve the exact
   // file to display.
   imageFolder: string;
 };

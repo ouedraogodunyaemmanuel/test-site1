@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
 import { obtenirUrlImageTirage } from "@/lib/images";
 import { FORMATS, FINITIONS, CADRES } from "@/data/options";
 import { useCart } from "@/components/cart/CartContext";
+import { PrintImage } from "@/components/shared/PrintImage";
 import { OptionGroup } from "./OptionGroup";
 
 // Duration (ms) of the fade/scale transition — must match the
@@ -25,7 +25,12 @@ export function PrintDetailModal({
   const { addItem, openCart } = useCart();
   const [formatSelectionne, setFormatSelectionne] = useState(FORMATS[0].value);
   const [finitionSelectionnee, setFinitionSelectionnee] = useState(FINITIONS[0].value);
-  const [cadreSelectionne, setCadreSelectionne] = useState(CADRES[0].value);
+  // "blanc" est le cadre affiché par défaut à l'ouverture de la
+  // modale, plutôt que le premier élément de CADRES (qui est
+  // "aucun").
+  const [cadreSelectionne, setCadreSelectionne] = useState(
+    CADRES.find((option) => option.value === "blanc")?.value ?? CADRES[0].value
+  );
   const [groupeOuvert, setGroupeOuvert] = useState<OptionGroupName | null>(null);
 
   // Controls the fade/scale-in and fade/scale-out animation: the modal
@@ -112,15 +117,14 @@ export function PrintDetailModal({
         }`}
         onClick={(evenement) => evenement.stopPropagation()}
       >
-        <div className="relative aspect-[4/5] w-full shrink-0 sm:w-3/5">
-          <Image
+        <div className="w-full shrink-0 sm:w-3/5">
+          <PrintImage
             // Changes dynamically with the format and frame selected
             // below.
             src={obtenirUrlImageTirage(tirage, cadreSelectionne, formatSelectionne)}
             alt={tirage.title}
-            fill
             sizes="(min-width: 640px) 60vw, 100vw"
-            className="object-cover"
+            ajustement="contain"
           />
         </div>
         <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">
