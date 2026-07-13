@@ -7,81 +7,81 @@ import { useCart } from "@/components/cart/CartContext";
 import { useDelivery } from "./DeliveryContext";
 
 export function DeliveryForm() {
-  const router = useRouter();
-  const { items, isReady: panierPret } = useCart();
-  const { delivery, setDelivery, isReady: livraisonPrete } = useDelivery();
-  const [form, setForm] = useState(delivery);
+  const routeur = useRouter();
+  const { articles, estPret: panierPret } = useCart();
+  const { livraison, definirLivraison, estPret: livraisonPrete } = useDelivery();
+  const [formulaire, setFormulaire] = useState(livraison);
 
   // Un panier vide n'a rien à livrer : on attend que le panier soit
   // chargé depuis le navigateur avant de vérifier, pour ne pas rediriger
-  // à tort au tout premier rendu (voir isReady sur CartContext).
+  // à tort au tout premier rendu (voir estPret sur CartContext).
   useEffect(() => {
-    if (panierPret && items.length === 0) {
-      router.replace("/");
+    if (panierPret && articles.length === 0) {
+      routeur.replace("/");
     }
-  }, [panierPret, items, router]);
+  }, [panierPret, articles, routeur]);
 
   // Pré-remplit le formulaire si des coordonnées avaient déjà été saisies
   // lors d'une visite précédente.
   useEffect(() => {
     if (livraisonPrete) {
-      setForm(delivery);
+      setFormulaire(livraison);
     }
-  }, [livraisonPrete, delivery]);
+  }, [livraisonPrete, livraison]);
 
-  function handleChange(champ: keyof typeof form) {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      setForm((current) => ({ ...current, [champ]: event.target.value }));
+  function gererChangement(champ: keyof typeof formulaire) {
+    return (evenement: ChangeEvent<HTMLInputElement>) => {
+      setFormulaire((current) => ({ ...current, [champ]: evenement.target.value }));
     };
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setDelivery(form);
-    router.push("/commande/recapitulatif");
+  function gererEnvoi(evenement: FormEvent<HTMLFormElement>) {
+    evenement.preventDefault();
+    definirLivraison(formulaire);
+    routeur.push("/commande/recapitulatif");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+    <form onSubmit={gererEnvoi} className="mt-8 space-y-6">
       <div className="grid gap-6 sm:grid-cols-2">
         <Champ
           label="Prénom"
-          id="firstName"
-          value={form.firstName}
-          onChange={handleChange("firstName")}
+          id="prenom"
+          value={formulaire.prenom}
+          onChange={gererChangement("prenom")}
         />
         <Champ
           label="Nom"
-          id="lastName"
-          value={form.lastName}
-          onChange={handleChange("lastName")}
+          id="nom"
+          value={formulaire.nom}
+          onChange={gererChangement("nom")}
         />
       </div>
       <Champ
         label="Téléphone"
-        id="phone"
+        id="telephone"
         type="tel"
-        value={form.phone}
-        onChange={handleChange("phone")}
+        value={formulaire.telephone}
+        onChange={gererChangement("telephone")}
       />
       <Champ
         label="Adresse (rue et numéro)"
-        id="street"
-        value={form.street}
-        onChange={handleChange("street")}
+        id="rue"
+        value={formulaire.rue}
+        onChange={gererChangement("rue")}
       />
       <div className="grid gap-6 sm:grid-cols-[120px_1fr]">
         <Champ
           label="NPA"
-          id="postalCode"
-          value={form.postalCode}
-          onChange={handleChange("postalCode")}
+          id="codePostal"
+          value={formulaire.codePostal}
+          onChange={gererChangement("codePostal")}
         />
         <Champ
           label="Ville"
-          id="city"
-          value={form.city}
-          onChange={handleChange("city")}
+          id="ville"
+          value={formulaire.ville}
+          onChange={gererChangement("ville")}
         />
       </div>
       <button
@@ -104,7 +104,7 @@ function Champ({
   label: string;
   id: string;
   value: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (evenement: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
 }) {
   return (

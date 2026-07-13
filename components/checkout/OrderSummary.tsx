@@ -9,44 +9,44 @@ import { useDelivery } from "./DeliveryContext";
 import { formaterPrixCHF } from "@/lib/pricing";
 
 export function OrderSummary() {
-  const router = useRouter();
-  const { items, totalPrice, isReady: panierPret } = useCart();
-  const { delivery, isReady: livraisonPrete } = useDelivery();
+  const routeur = useRouter();
+  const { articles, prixTotal, estPret: panierPret } = useCart();
+  const { livraison, estPret: livraisonPrete } = useDelivery();
   const [enCoursDePaiement, setEnCoursDePaiement] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
 
   // Redirige si le panier est vide, ou si les informations de livraison
   // n'ont pas été saisies. On attend que les deux contextes soient chargés
   // depuis le navigateur avant de vérifier, pour ne pas rediriger à tort
-  // au premier rendu (voir isReady sur CartContext et DeliveryContext).
+  // au premier rendu (voir estPret sur CartContext et DeliveryContext).
   useEffect(() => {
     if (!panierPret || !livraisonPrete) return;
 
-    if (items.length === 0) {
-      router.replace("/");
+    if (articles.length === 0) {
+      routeur.replace("/");
       return;
     }
 
     const infosIncompletes =
-      !delivery.firstName ||
-      !delivery.lastName ||
-      !delivery.phone ||
-      !delivery.street ||
-      !delivery.postalCode ||
-      !delivery.city;
+      !livraison.prenom ||
+      !livraison.nom ||
+      !livraison.telephone ||
+      !livraison.rue ||
+      !livraison.codePostal ||
+      !livraison.ville;
     if (infosIncompletes) {
-      router.replace("/commande/livraison");
+      routeur.replace("/commande/livraison");
     }
-  }, [panierPret, livraisonPrete, items, delivery, router]);
+  }, [panierPret, livraisonPrete, articles, livraison, routeur]);
 
-  async function handleConfirm() {
+  async function gererConfirmation() {
     setErreur(null);
     setEnCoursDePaiement(true);
     try {
       const reponse = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, delivery }),
+        body: JSON.stringify({ articles, livraison }),
       });
       const donnees = await reponse.json();
       if (!reponse.ok || !donnees.url) {
@@ -66,12 +66,12 @@ export function OrderSummary() {
       <section>
         <h2 className="font-serif text-xl text-stone-900">Articles</h2>
         <div className="mt-4 divide-y divide-stone-200">
-          {items.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 py-4">
+          {articles.map((article) => (
+            <div key={article.id} className="flex items-center gap-4 py-4">
               <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-stone-200">
                 <Image
-                  src={item.image}
-                  alt={item.title}
+                  src={article.image}
+                  alt={article.titre}
                   fill
                   sizes="56px"
                   className="object-cover"
@@ -79,21 +79,21 @@ export function OrderSummary() {
               </div>
               <div className="flex-1 text-sm">
                 <p className="text-stone-900">
-                  {item.title} × {item.quantity}
+                  {article.titre} × {article.quantite}
                 </p>
                 <p className="text-stone-500">
-                  {item.formatLabel} · {item.finishLabel} · {item.frameLabel}
+                  {article.libelleFormat} · {article.libelleFinition} · {article.libelleCadre}
                 </p>
               </div>
               <p className="text-stone-900">
-                {formaterPrixCHF(item.unitPrice * item.quantity)}
+                {formaterPrixCHF(article.prixUnitaire * article.quantite)}
               </p>
             </div>
           ))}
         </div>
         <div className="mt-4 flex items-center justify-between text-lg text-stone-900">
           <span>Total</span>
-          <span>{formaterPrixCHF(totalPrice)}</span>
+          <span>{formaterPrixCHF(prixTotal)}</span>
         </div>
       </section>
 
@@ -108,13 +108,13 @@ export function OrderSummary() {
           </Link>
         </div>
         <p className="mt-3 text-stone-600 leading-relaxed">
-          {delivery.firstName} {delivery.lastName}
+          {livraison.prenom} {livraison.nom}
           <br />
-          {delivery.street}
+          {livraison.rue}
           <br />
-          {delivery.postalCode} {delivery.city}
+          {livraison.codePostal} {livraison.ville}
           <br />
-          {delivery.phone}
+          {livraison.telephone}
         </p>
       </section>
 
@@ -122,7 +122,7 @@ export function OrderSummary() {
 
       <button
         type="button"
-        onClick={handleConfirm}
+        onClick={gererConfirmation}
         disabled={enCoursDePaiement}
         className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
       >

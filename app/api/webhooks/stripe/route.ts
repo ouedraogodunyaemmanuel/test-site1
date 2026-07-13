@@ -7,9 +7,9 @@ import { resend } from "@/lib/resend";
 // paiement aboutit — indépendamment de ce que fait ensuite le navigateur
 // du client (contrairement à la page /commande/succes, qui dépend d'une
 // redirection qui peut ne jamais arriver).
-export async function POST(request: Request) {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!webhookSecret) {
+export async function POST(requete: Request) {
+  const secretWebhook = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secretWebhook) {
     throw new Error(
       "La variable d'environnement STRIPE_WEBHOOK_SECRET est manquante. Ajoute-la dans .env.local."
     );
@@ -18,26 +18,26 @@ export async function POST(request: Request) {
   // Le corps brut (non parsé) est indispensable pour vérifier la
   // signature : la moindre modification d'un octet invaliderait la
   // vérification.
-  const payload = await request.text();
-  const signature = request.headers.get("stripe-signature");
+  const corpsBrut = await requete.text();
+  const signature = requete.headers.get("stripe-signature");
 
   if (!signature) {
     return NextResponse.json({ error: "Signature manquante." }, { status: 400 });
   }
 
-  let event: Stripe.Event;
+  let evenement: Stripe.Event;
   try {
     // C'est cette vérification qui garantit que la requête vient
     // vraiment de Stripe, et non d'un tiers qui simulerait un paiement
     // réussi pour se faire livrer gratuitement.
-    event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    evenement = stripe.webhooks.constructEvent(corpsBrut, signature, secretWebhook);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Signature invalide.";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
+  if (evenement.type === "checkout.session.completed") {
+    const session = evenement.data.object as Stripe.Checkout.Session;
     await envoyerEmailDeCommande(session);
   }
 

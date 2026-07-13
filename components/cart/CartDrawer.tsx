@@ -8,42 +8,42 @@ import { formaterPrixCHF } from "@/lib/pricing";
 
 // Panneau qui glisse depuis la droite pour afficher le contenu du panier.
 export function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, totalPrice } =
+  const { articles, estOuvert, fermerPanier, retirerArticle, mettreAJourQuantite, prixTotal } =
     useCart();
 
   // Ferme le panier avec la touche Échap, pour une navigation clavier correcte.
   useEffect(() => {
-    if (!isOpen) return;
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        closeCart();
+    if (!estOuvert) return;
+    function gererTouche(evenement: KeyboardEvent) {
+      if (evenement.key === "Escape") {
+        fermerPanier();
       }
     }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeCart]);
+    window.addEventListener("keydown", gererTouche);
+    return () => window.removeEventListener("keydown", gererTouche);
+  }, [estOuvert, fermerPanier]);
 
-  if (!isOpen) {
+  if (!estOuvert) {
     return null;
   }
 
   return (
     <div
       className="fixed inset-0 z-50 flex justify-end bg-black/60"
-      onClick={closeCart}
+      onClick={fermerPanier}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Panier"
         className="flex h-full w-full max-w-md flex-col bg-stone-50 p-6"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(evenement) => evenement.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-xl text-stone-900">Votre panier</h2>
           <button
             type="button"
-            onClick={closeCart}
+            onClick={fermerPanier}
             aria-label="Fermer le panier"
             className="text-stone-500 transition-colors hover:text-stone-900"
           >
@@ -51,30 +51,30 @@ export function CartDrawer() {
           </button>
         </div>
 
-        {items.length === 0 ? (
+        {articles.length === 0 ? (
           <p className="mt-8 text-sm text-stone-500">Votre panier est vide.</p>
         ) : (
           <div className="mt-6 flex flex-1 flex-col gap-6 overflow-y-auto">
-            {items.map((item) => (
+            {articles.map((article) => (
               <CartLine
-                key={item.id}
-                item={item}
-                onRemove={() => removeItem(item.id)}
-                onQuantityChange={(quantity) => updateQuantity(item.id, quantity)}
+                key={article.id}
+                article={article}
+                onRetirer={() => retirerArticle(article.id)}
+                onChangementQuantite={(quantite) => mettreAJourQuantite(article.id, quantite)}
               />
             ))}
           </div>
         )}
 
-        {items.length > 0 && (
+        {articles.length > 0 && (
           <div className="mt-6 border-t border-stone-200 pt-4">
             <div className="flex items-center justify-between text-lg text-stone-900">
               <span>Total</span>
-              <span>{formaterPrixCHF(totalPrice)}</span>
+              <span>{formaterPrixCHF(prixTotal)}</span>
             </div>
             <Link
               href="/commande/livraison"
-              onClick={closeCart}
+              onClick={fermerPanier}
               className="mt-4 block w-full bg-stone-900 px-6 py-3 text-center text-sm tracking-wide text-stone-50 transition-colors hover:bg-stone-700"
             >
               Payer
