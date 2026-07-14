@@ -86,6 +86,24 @@ export function PrintImage({
   // same size.
   const [ratioReel, setRatioReel] = useState<number | null>(null);
   const [estCharge, setEstCharge] = useState(false);
+  // Dernière photo qui était déjà pleinement affichée avant que `src`
+  // ne change (ex. le client choisit un autre cadre ou format dans
+  // PrintDetailModal). Reste affichée, nette, pendant que la nouvelle
+  // charge — sans ça, le changement d'option faisait clignoter la zone
+  // (l'ancienne image disparaît dès que le navigateur commence à
+  // charger la nouvelle, avant qu'elle soit prête à s'afficher).
+  const [imagePrecedente, setImagePrecedente] = useState<string | null>(null);
+  // Permet de détecter, pendant le rendu, que `src` vient de changer —
+  // voir https://react.dev/reference/react/useState#storing-information-from-previous-renders.
+  // On ne peut pas attendre un useEffect : il s'exécute après l'affichage,
+  // ce qui laisserait passer une image visible pendant un instant avant
+  // sa propre transition d'apparition.
+  const [srcPrecedent, setSrcPrecedent] = useState(src);
+  if (src !== srcPrecedent) {
+    setImagePrecedente(estCharge ? srcPrecedent : imagePrecedente);
+    setSrcPrecedent(src);
+    setEstCharge(false);
+  }
 
   function gererChargement(evenement: React.SyntheticEvent<HTMLImageElement>) {
     const cible = evenement.currentTarget;
@@ -95,16 +113,35 @@ export function PrintImage({
     onRatioConnu?.(ratio);
   }
 
+  // Rien à afficher du tout derrière la photo en cours de chargement :
+  // ni un aperçu flou, ni une photo précédente. Seul ce cas fait
+  // "respirer" le fond — sinon la pulsation serait visible par-dessus
+  // une image déjà là, ce qui distrairait pour rien.
+  const boiteVide = !estCharge && !imagePrecedente && !apercuFlouSrc;
+
   // Zoomé à 110% et flouté, pour cacher les bords qui deviendraient
-  // visibles à cause du flou lui-même. Reste sous la vraie photo tout
-  // du long : une fois celle-ci chargée et opaque, il est simplement
-  // recouvert — pas besoin de le faire disparaître explicitement.
+  // visibles à cause du flou lui-même. Reste monté tout du long : une
+  // fois la vraie photo (ou imagePrecedente) chargée et opaque
+  // par-dessus, il est simplement recouvert — pas besoin de le faire
+  // disparaître explicitement.
   const apercuFlou = apercuFlouSrc ? (
     <img
       src={apercuFlouSrc}
       alt=""
       aria-hidden="true"
       className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl"
+    />
+  ) : null;
+
+  const photoPrecedente = imagePrecedente ? (
+    <Image
+      src={imagePrecedente}
+      alt=""
+      aria-hidden="true"
+      fill
+      sizes={sizes}
+      unoptimized={unoptimized}
+      className={ajustement === "contain" ? "object-contain" : "object-cover"}
     />
   ) : null;
 
@@ -120,10 +157,11 @@ export function PrintImage({
     return (
       <div
         className={`relative h-full w-full overflow-hidden bg-stone-200 ${
-          estCharge ? "" : "animate-pulse"
+          boiteVide ? "animate-pulse" : ""
         } ${containerClassName}`}
       >
         {apercuFlou}
+        {photoPrecedente}
         <Image
           src={src}
           alt={alt}
@@ -146,11 +184,12 @@ export function PrintImage({
       style={ratioConnu ? { aspectRatio: ratioReel } : undefined}
       className={`relative w-full overflow-hidden ${hauteurMaximaleClassName} ${
         ajustement === "contain" ? "bg-white" : "bg-stone-200"
-      } ${estCharge ? "" : "animate-pulse"} ${
+      } ${boiteVide ? "animate-pulse" : ""} ${
         ratioConnu ? "" : estPaysage ? "aspect-[3/2]" : "aspect-[2/3]"
       } ${ajustement === "cover" ? containerClassName : ""}`}
     >
       {apercuFlou}
+      {photoPrecedente}
       <Image
         src={src}
         alt={alt}
