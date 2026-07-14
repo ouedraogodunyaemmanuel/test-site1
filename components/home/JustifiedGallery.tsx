@@ -106,6 +106,13 @@ export function JustifiedGallery({
       ? calculerLignes(ratiosOrdonnes, largeurConteneur, hauteurCible, ECART)
       : [];
 
+  // Identifies the current filtered set of photos, not just this
+  // render — included in each card's key below so every card gets a
+  // fresh mount (and replays its entrance animation) whenever the
+  // category filter changes, even a card that was already visible
+  // before under a different position/size.
+  const signatureFiltre = tirages.map((tirage) => tirage.id).join(",");
+
   return (
     <div ref={conteneurRef} className="flex flex-col gap-4">
       {lignes.map((ligne, indexLigne) => (
@@ -114,12 +121,15 @@ export function JustifiedGallery({
             const tirage = tirages[index];
             return (
               <PrintCard
-                key={tirage.id}
+                key={`${signatureFiltre}-${tirage.id}`}
                 tirage={tirage}
                 onOuvrir={() => onOuvrirTirage(tirage)}
                 style={{ width: largeur, height: hauteur }}
                 sizes={`${Math.round(largeur)}px`}
                 onRatioConnu={(ratio) => gererRatioConnu(tirage.id, ratio)}
+                // Staggered by position, capped so a large gallery
+                // doesn't end up with a long tail of slow entrances.
+                animationDelayMs={Math.min(index, 12) * 80}
               />
             );
           })}

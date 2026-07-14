@@ -27,7 +27,7 @@ export function HeroSection() {
         </p>
         <a
           href="#gallery"
-          className="mt-8 inline-flex items-center gap-2 border border-stone-50 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-50 hover:text-stone-900 active:scale-[0.97]"
+          className="mt-8 inline-flex items-center gap-2 border border-stone-50 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-50 hover:text-stone-900 active:scale-[0.93]"
         >
           Découvrir la collection
         </a>

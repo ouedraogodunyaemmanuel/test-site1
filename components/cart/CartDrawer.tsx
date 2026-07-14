@@ -72,7 +72,7 @@ export function CartDrawer() {
             type="button"
             onClick={closeCart}
             aria-label="Fermer le panier"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-900 text-stone-50 transition hover:bg-stone-700 active:scale-90"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-900 text-stone-50 transition hover:bg-stone-700 active:scale-85"
           >
             ✕
           </button>
@@ -102,7 +102,7 @@ export function CartDrawer() {
             <Link
               href="/commande/livraison"
               onClick={closeCart}
-              className="mt-4 block w-full bg-stone-900 px-6 py-3 text-center text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
+              className="mt-4 block w-full bg-stone-900 px-6 py-3 text-center text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.93]"
             >
               Payer
             </Link>

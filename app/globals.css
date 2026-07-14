@@ -59,3 +59,30 @@ body {
     animation: none;
   }
 }
+
+/* Plays on every card in the gallery whenever the set of photos
+   shown changes (e.g. picking a different category filter) — see
+   JustifiedGallery.tsx, which forces a fresh mount per card by
+   including the active filter in its key. `both` keeps the card
+   invisible during its `animation-delay` (used to stagger the
+   cards one after another) instead of flashing visible first. */
+@keyframes gallery-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gallery-card-enter {
+  animation: gallery-card-enter 800ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-card-enter {
+    animation: none;
+  }
+}

@@ -12,7 +12,7 @@ export function CartButton() {
       type="button"
       onClick={toggleCart}
       aria-label="Ouvrir le panier"
-      className="fixed right-4 top-4 z-50 flex items-center gap-2 rounded-full border border-stone-300 bg-stone-50/90 px-3 py-2 text-sm text-stone-900 shadow-sm backdrop-blur-md transition hover:border-stone-900 active:scale-[0.97] sm:right-6 sm:top-5 sm:px-4"
+      className="fixed right-4 top-4 z-50 flex items-center gap-2 rounded-full border border-stone-300 bg-stone-50/90 px-3 py-2 text-sm text-stone-900 shadow-sm backdrop-blur-md transition hover:border-stone-900 active:scale-[0.93] sm:right-6 sm:top-5 sm:px-4"
     >
       {/* Icon only on mobile, text reappears from sm — keeps the
           button compact so there's room for the header's navigation

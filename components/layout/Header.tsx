@@ -55,7 +55,7 @@ export function Header() {
           onClick={() => setMenuOuvert((current) => !current)}
           aria-expanded={menuOuvert}
           aria-label={menuOuvert ? "Fermer le menu" : "Ouvrir le menu"}
-          className="flex flex-col items-center justify-center gap-1.5 p-2 transition active:scale-90 md:hidden"
+          className="flex flex-col items-center justify-center gap-1.5 p-2 transition active:scale-85 md:hidden"
         >
           <span
             className={`h-px w-6 bg-stone-900 transition-transform duration-200 ${

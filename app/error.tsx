@@ -31,13 +31,13 @@ export default function ErrorBoundary({
         <button
           type="button"
           onClick={reset}
-          className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
+          className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.93]"
         >
           Réessayer
         </button>
         <Link
           href="/"
-          className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
+          className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.93]"
         >
           Retour à l&apos;accueil
         </Link>

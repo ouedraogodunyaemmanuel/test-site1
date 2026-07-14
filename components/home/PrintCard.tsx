@@ -11,6 +11,7 @@ export function PrintCard({
   style,
   sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   onRatioConnu,
+  animationDelayMs = 0,
 }: {
   tirage: Print;
   onOuvrir: () => void;
@@ -19,13 +20,16 @@ export function PrintCard({
   style?: CSSProperties;
   sizes?: string;
   onRatioConnu?: (ratio: number) => void;
+  // Staggers the card's entrance animation behind the ones before it
+  // (see gallery-card-enter in globals.css and JustifiedGallery.tsx).
+  animationDelayMs?: number;
 }) {
   return (
     <button
       type="button"
       onClick={onOuvrir}
-      style={style}
-      className="group relative block overflow-hidden text-left transition-transform active:scale-[0.98]"
+      style={{ ...style, animationDelay: `${animationDelayMs}ms` }}
+      className="group relative block overflow-hidden text-left transition-transform active:scale-[0.94] gallery-card-enter"
     >
       <PrintImage
         // No options chosen yet at this stage (just hovering the

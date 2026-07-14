@@ -20,12 +20,17 @@ export function CategoryFilterMenu({
   const libelleActuel = filtres.find((filtre) => filtre.value === categorieActive)?.label;
 
   return (
-    <div className="relative">
+    // `self-start` stops this from stretching to the full width of
+    // GallerySection's `flex-col` header on mobile (the flex default),
+    // which would otherwise anchor the dropdown's `right-0` to that
+    // stretched width instead of to the button itself. `sm:self-auto`
+    // hands alignment back to the parent's `sm:items-end` on desktop.
+    <div className="relative self-start sm:self-auto">
       <button
         type="button"
         onClick={() => setEstOuvert((current) => !current)}
         aria-expanded={estOuvert}
-        className="flex items-center gap-2 rounded-full border border-stone-300 px-4 py-1.5 text-sm text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.95]"
+        className="flex items-center gap-2 rounded-full border border-stone-300 px-4 py-1.5 text-sm text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.90]"
       >
         <span>Filtrer : {libelleActuel}</span>
         <span
@@ -36,7 +41,11 @@ export function CategoryFilterMenu({
         </span>
       </button>
       {estOuvert && (
-        <div className="absolute right-0 z-10 mt-2 flex w-48 flex-col rounded-lg border border-stone-200 bg-stone-50 py-2 shadow-lg">
+        // Left-aligned on mobile (the button sits near the left edge
+        // there, so right-aligning a menu wider than the button would
+        // push it off-screen); right-aligned from `sm` up, to match
+        // the button's position at the right end of the header row.
+        <div className="absolute left-0 z-10 mt-2 flex w-48 flex-col rounded-lg border border-stone-200 bg-stone-50 py-2 shadow-lg sm:left-auto sm:right-0">
           {filtres.map((filtre) => (
             <button
               key={filtre.value}
@@ -45,7 +54,7 @@ export function CategoryFilterMenu({
                 onChangementCategorie(filtre.value);
                 setEstOuvert(false);
               }}
-              className={`px-4 py-2 text-left text-sm transition active:scale-[0.98] ${
+              className={`px-4 py-2 text-left text-sm transition active:scale-[0.94] ${
                 categorieActive === filtre.value
                   ? "bg-stone-900 text-stone-50"
                   : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
