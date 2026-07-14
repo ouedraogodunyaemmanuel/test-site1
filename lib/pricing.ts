@@ -1,9 +1,9 @@
 // Price grid (CHF) by format, depending on whether a frame is chosen.
 // The price doesn't depend on the photo: it's the same across the whole catalog.
 export const GRILLE_PRIX: Record<string, { sansCadre: number; avecCadre: number }> = {
-  "20x30": { sansCadre: 39, avecCadre: 69 },
-  "40x60": { sansCadre: 59, avecCadre: 99 },
-  "60x90": { sansCadre: 109, avecCadre: 209 },
+  "20x30": { sansCadre: 49, avecCadre: 79 },
+  "40x60": { sansCadre: 69, avecCadre: 159 },
+  "60x90": { sansCadre: 119, avecCadre: 299 },
 };
 
 // The price shown on the cards ("from ..."), i.e. the lowest rate in the catalog.

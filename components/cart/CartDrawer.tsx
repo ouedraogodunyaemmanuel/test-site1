@@ -10,7 +10,7 @@ import { formaterPrixCHF } from "@/lib/pricing";
 // `duration-200` Tailwind class used below, since we rely on a timer
 // (not a CSS transitionend event) to know when it's safe to actually
 // remove the drawer from the page.
-const DUREE_ANIMATION_MS = 200;
+const ANIMATION_DURATION_MS = 200;
 
 // Panel that slides in from the right to show the cart contents.
 export function CartDrawer() {
@@ -20,40 +20,40 @@ export function CartDrawer() {
   // `isOpen` (from CartContext) toggles instantly, but we want the
   // drawer to stay in the DOM a little longer when closing so its
   // exit transition (slide + fade) has time to play.
-  const [estMonte, setEstMonte] = useState(false);
-  const [estVisible, setEstVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setEstMonte(true);
-      const id = requestAnimationFrame(() => setEstVisible(true));
+      setIsMounted(true);
+      const id = requestAnimationFrame(() => setIsVisible(true));
       return () => cancelAnimationFrame(id);
     }
-    setEstVisible(false);
-    const idMinuteur = setTimeout(() => setEstMonte(false), DUREE_ANIMATION_MS);
-    return () => clearTimeout(idMinuteur);
+    setIsVisible(false);
+    const timerId = setTimeout(() => setIsMounted(false), ANIMATION_DURATION_MS);
+    return () => clearTimeout(timerId);
   }, [isOpen]);
 
   // Close the cart with the Escape key, for correct keyboard navigation.
   useEffect(() => {
     if (!isOpen) return;
-    function gererTouche(evenement: KeyboardEvent) {
-      if (evenement.key === "Escape") {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
         closeCart();
       }
     }
-    window.addEventListener("keydown", gererTouche);
-    return () => window.removeEventListener("keydown", gererTouche);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, closeCart]);
 
-  if (!estMonte) {
+  if (!isMounted) {
     return null;
   }
 
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black/60 transition-opacity duration-200 ${
-        estVisible ? "opacity-100" : "opacity-0"
+        isVisible ? "opacity-100" : "opacity-0"
       }`}
       onClick={closeCart}
     >
@@ -62,9 +62,9 @@ export function CartDrawer() {
         aria-modal="true"
         aria-label="Panier"
         className={`flex h-full w-full max-w-md flex-col bg-stone-50 p-6 transition-transform duration-200 ${
-          estVisible ? "translate-x-0" : "translate-x-full"
+          isVisible ? "translate-x-0" : "translate-x-full"
         }`}
-        onClick={(evenement) => evenement.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-xl text-stone-900">Votre panier</h2>
@@ -72,7 +72,7 @@ export function CartDrawer() {
             type="button"
             onClick={closeCart}
             aria-label="Fermer le panier"
-            className="text-stone-500 transition hover:text-stone-900 active:scale-90"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-900 text-stone-50 transition hover:bg-stone-700 active:scale-90"
           >
             ✕
           </button>
@@ -85,9 +85,9 @@ export function CartDrawer() {
             {items.map((item) => (
               <CartLine
                 key={item.id}
-                article={item}
-                onRetirer={() => removeItem(item.id)}
-                onChangementQuantite={(quantite) => updateQuantity(item.id, quantite)}
+                item={item}
+                onRemove={() => removeItem(item.id)}
+                onQuantityChange={(quantity) => updateQuantity(item.id, quantity)}
               />
             ))}
           </div>

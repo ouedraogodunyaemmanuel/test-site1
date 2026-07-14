@@ -48,10 +48,7 @@ export function OptionGroup({
             <button
               key={option.value}
               type="button"
-              onClick={() => {
-                onSelectionner(option.value);
-                onBasculer();
-              }}
+              onClick={() => onSelectionner(option.value)}
               className={`rounded-full border px-3 py-1.5 text-sm transition active:scale-[0.95] ${
                 option.value === valeurActuelle
                   ? "border-stone-900 bg-stone-900 text-stone-50"

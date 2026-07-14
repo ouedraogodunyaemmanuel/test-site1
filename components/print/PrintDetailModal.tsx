@@ -13,179 +13,259 @@ import { OptionGroup } from "./OptionGroup";
 // `duration-200` Tailwind class used below, since we rely on a timer
 // (not a CSS transitionend event) to know when it's safe to actually
 // unmount the modal.
-const DUREE_ANIMATION_MS = 200;
+const ANIMATION_DURATION_MS = 200;
 
 export function PrintDetailModal({
-  tirage,
-  onFermer,
+  tirage: print,
+  onFermer: onClose,
 }: {
   tirage: Print;
   onFermer: () => void;
 }) {
   const { addItem, openCart } = useCart();
-  const [formatSelectionne, setFormatSelectionne] = useState(FORMATS[0].value);
-  const [finitionSelectionnee, setFinitionSelectionnee] = useState(FINITIONS[0].value);
-  // "blanc" is the frame shown by default when the modal opens,
-  // rather than the first element of CADRES (which is "aucun").
-  const [cadreSelectionne, setCadreSelectionne] = useState(
-    CADRES.find((option) => option.value === "blanc")?.value ?? CADRES[0].value
-  );
-  const [groupeOuvert, setGroupeOuvert] = useState<OptionGroupName | null>(null);
+  const [selectedFormat, setSelectedFormat] = useState(FORMATS[0].value);
+  const [selectedFinish, setSelectedFinish] = useState(FINITIONS[0].value);
+  // "aucun" (no frame) is the frame shown by default when the modal opens.
+  const [selectedFrame, setSelectedFrame] = useState(CADRES[0].value);
+  // A Set (not a single value) so several dropdowns can stay open at
+  // once — picking a sub-option no longer closes its group either,
+  // only clicking the group's own button toggles it.
+  const [openGroups, setOpenGroups] = useState<Set<OptionGroupName>>(new Set());
+  // Shown when the customer tries to add a print without a frame, so
+  // they can confirm this choice on purpose (whatever format/finish
+  // they picked otherwise).
+  const [noFrameConfirmationOpen, setNoFrameConfirmationOpen] = useState(false);
 
   // Controls the fade/scale-in and fade/scale-out animation: the modal
   // starts hidden, becomes visible right after mounting, and is marked
   // "closing" for the short time the exit transition plays before the
   // parent actually removes it from the page.
-  const [estVisible, setEstVisible] = useState(false);
-  const [enFermeture, setEnFermeture] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => setEstVisible(true));
+    const id = requestAnimationFrame(() => setIsVisible(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
   // Plays the exit transition, then tells the parent to actually
   // unmount the modal once it's finished.
-  const fermerAvecAnimation = useCallback(() => {
-    setEnFermeture(true);
-    setTimeout(onFermer, DUREE_ANIMATION_MS);
-  }, [onFermer]);
+  const closeWithAnimation = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(onClose, ANIMATION_DURATION_MS);
+  }, [onClose]);
 
-  function basculerGroupe(nom: OptionGroupName) {
-    setGroupeOuvert((current) => (current === nom ? null : nom));
+  function toggleGroup(name: OptionGroupName) {
+    setOpenGroups((current) => {
+      const next = new Set(current);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
   }
 
   // Adds the print to the cart with the currently selected options,
   // then opens the cart to visually confirm the addition worked.
-  function gererAjoutPanier() {
+  function addToCart() {
     addItem({
-      id: `${tirage.id}-${formatSelectionne}-${finitionSelectionnee}-${cadreSelectionne}`,
-      printId: tirage.id,
-      title: tirage.title,
+      id: `${print.id}-${selectedFormat}-${selectedFinish}-${selectedFrame}`,
+      printId: print.id,
+      title: print.title,
       // The image saved in the cart matches exactly the frame chosen
       // at the time it was added — it won't change afterwards even if
       // the customer reopens the product page and changes their mind.
-      image: obtenirUrlImageTirage(tirage, cadreSelectionne, formatSelectionne),
-      format: formatSelectionne,
-      frame: cadreSelectionne,
-      formatLabel: trouverLabel(FORMATS, formatSelectionne),
-      finishLabel: trouverLabel(FINITIONS, finitionSelectionnee),
-      frameLabel: trouverLabel(CADRES, cadreSelectionne),
-      unitPrice: calculerPrix(formatSelectionne, cadreSelectionne),
+      image: obtenirUrlImageTirage(print, selectedFrame, selectedFormat),
+      format: selectedFormat,
+      frame: selectedFrame,
+      formatLabel: findLabel(FORMATS, selectedFormat),
+      finishLabel: findLabel(FINITIONS, selectedFinish),
+      frameLabel: findLabel(CADRES, selectedFrame),
+      unitPrice: calculerPrix(selectedFormat, selectedFrame),
     });
-    fermerAvecAnimation();
+    closeWithAnimation();
     openCart();
   }
 
+  // Without a frame, the print is added straight away. With "aucun"
+  // selected as the frame, we ask for confirmation first — regardless
+  // of the format or finish chosen — since customers sometimes forget
+  // to pick a frame rather than actively choosing to go without one.
+  function handleAddToCartClick() {
+    if (selectedFrame === "aucun") {
+      setNoFrameConfirmationOpen(true);
+      return;
+    }
+    addToCart();
+  }
+
+  // Pre-selects the "blanc" frame as a sensible default and opens the
+  // frame dropdown, so the customer can immediately pick a different
+  // one if they prefer, instead of having to reopen the group by hand.
+  function handleChooseFrameClick() {
+    setSelectedFrame("blanc");
+    setOpenGroups((current) => new Set(current).add("cadre"));
+    setNoFrameConfirmationOpen(false);
+  }
+
   // Close the modal with the Escape key, for correct keyboard navigation.
+  // While the "sans cadre" confirmation is open, Escape only dismisses
+  // it and leaves the print detail modal open.
   useEffect(() => {
-    function gererTouche(evenement: KeyboardEvent) {
-      if (evenement.key === "Escape") {
-        fermerAvecAnimation();
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        if (noFrameConfirmationOpen) {
+          setNoFrameConfirmationOpen(false);
+        } else {
+          closeWithAnimation();
+        }
       }
     }
-    window.addEventListener("keydown", gererTouche);
-    return () => window.removeEventListener("keydown", gererTouche);
-  }, [fermerAvecAnimation]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [closeWithAnimation, noFrameConfirmationOpen]);
 
   // Lock background scrolling while the modal is open, and restore the
   // previous value on close (fixes the page scrolling behind the modal).
   useEffect(() => {
-    const debordementPrecedent = document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = debordementPrecedent;
+      document.body.style.overflow = previousOverflow;
     };
   }, []);
 
-  const estAffiche = estVisible && !enFermeture;
+  const isShown = isVisible && !isClosing;
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity duration-200 sm:p-10 ${
-        estAffiche ? "opacity-100" : "opacity-0"
-      }`}
-      onClick={fermerAvecAnimation}
-    >
+    <>
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="print-detail-title"
-        className={`relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 transition-all duration-200 sm:flex-row ${
-          estAffiche ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity duration-200 sm:p-10 ${
+          isShown ? "opacity-100" : "opacity-0"
         }`}
-        onClick={(evenement) => evenement.stopPropagation()}
+        onClick={closeWithAnimation}
       >
-        <div className="w-full shrink-0 sm:w-3/5">
-          <PrintImage
-            // Changes dynamically with the format and frame selected
-            // below.
-            src={obtenirUrlImageTirage(tirage, cadreSelectionne, formatSelectionne)}
-            alt={tirage.title}
-            sizes="(min-width: 640px) 60vw, 100vw"
-            ajustement="contain"
-          />
-        </div>
-        <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">
-          <div>
-            <h3 id="print-detail-title" className="font-serif text-2xl text-stone-900">
-              {tirage.title}
-            </h3>
-            <p className="mt-6 text-2xl text-stone-900">
-              {formaterPrixCHF(calculerPrix(formatSelectionne, cadreSelectionne))}
-            </p>
-
-            <div className="mt-6">
-              <OptionGroup
-                titre="Format"
-                options={FORMATS}
-                valeurActuelle={formatSelectionne}
-                estOuvert={groupeOuvert === "format"}
-                onBasculer={() => basculerGroupe("format")}
-                onSelectionner={setFormatSelectionne}
-              />
-              <OptionGroup
-                titre="Finition"
-                options={FINITIONS}
-                valeurActuelle={finitionSelectionnee}
-                estOuvert={groupeOuvert === "finition"}
-                onBasculer={() => basculerGroupe("finition")}
-                onSelectionner={setFinitionSelectionnee}
-              />
-              <OptionGroup
-                titre="Cadre"
-                options={CADRES}
-                valeurActuelle={cadreSelectionne}
-                estOuvert={groupeOuvert === "cadre"}
-                onBasculer={() => basculerGroupe("cadre")}
-                onSelectionner={setCadreSelectionne}
-              />
-            </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="print-detail-title"
+          className={`relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 transition-all duration-200 sm:flex-row ${
+            isShown ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex w-full shrink-0 items-center justify-center sm:w-3/5">
+            <PrintImage
+              // Changes dynamically with the format and frame selected
+              // below.
+              src={obtenirUrlImageTirage(print, selectedFrame, selectedFormat)}
+              alt={print.title}
+              sizes="(min-width: 640px) 60vw, 100vw"
+              ajustement="contain"
+              containerClassName="w-full"
+            />
           </div>
-          <div className="mt-8 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={gererAjoutPanier}
-              className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
-            >
-              Ajouter au panier
-            </button>
-            <button
-              type="button"
-              onClick={fermerAvecAnimation}
-              className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
-            >
-              Fermer
-            </button>
+          <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">
+            <div>
+              <h3 id="print-detail-title" className="font-serif text-2xl text-stone-900">
+                {print.title}
+              </h3>
+              <p className="mt-6 text-2xl text-stone-900">
+                {formaterPrixCHF(calculerPrix(selectedFormat, selectedFrame))}
+              </p>
+
+              <div className="mt-6">
+                <OptionGroup
+                  titre="Format"
+                  options={FORMATS}
+                  valeurActuelle={selectedFormat}
+                  estOuvert={openGroups.has("format")}
+                  onBasculer={() => toggleGroup("format")}
+                  onSelectionner={setSelectedFormat}
+                />
+                <OptionGroup
+                  titre="Finition"
+                  options={FINITIONS}
+                  valeurActuelle={selectedFinish}
+                  estOuvert={openGroups.has("finition")}
+                  onBasculer={() => toggleGroup("finition")}
+                  onSelectionner={setSelectedFinish}
+                />
+                <OptionGroup
+                  titre="Cadre"
+                  options={CADRES}
+                  valeurActuelle={selectedFrame}
+                  estOuvert={openGroups.has("cadre")}
+                  onBasculer={() => toggleGroup("cadre")}
+                  onSelectionner={setSelectedFrame}
+                />
+              </div>
+            </div>
+            <div className="mt-8 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={handleAddToCartClick}
+                className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
+              >
+                Ajouter au panier
+              </button>
+              <button
+                type="button"
+                onClick={closeWithAnimation}
+                className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
+              >
+                Fermer
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {noFrameConfirmationOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Confirmation sans cadre"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setNoFrameConfirmationOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-stone-50 p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <p className="text-stone-900">
+              Êtes-vous sûr de vouloir continuer sans cadre&nbsp;?
+            </p>
+            <div className="mt-6 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={handleChooseFrameClick}
+                className="bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.97]"
+              >
+                Choisir un cadre
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setNoFrameConfirmationOpen(false);
+                  addToCart();
+                }}
+                className="border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.97]"
+              >
+                Continuer sans cadre
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 // Finds the human-readable label (e.g. "Mat") matching a technical
 // value (e.g. "mat") in a list of options.
-function trouverLabel(options: SelectOption[], valeur: string): string {
-  return options.find((option) => option.value === valeur)?.label ?? valeur;
+function findLabel(options: SelectOption[], value: string): string {
+  return options.find((option) => option.value === value)?.label ?? value;
 }
