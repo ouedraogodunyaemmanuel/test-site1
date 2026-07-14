@@ -3,7 +3,7 @@
 //   import type { Print, Category, ... } from "@/types/print";
 
 // The categories that exist in the catalog.
-export type Category = "montagne" | "mer" | "desert" | "foret";
+export type Category = "diurne" | "enneige" | "aurore" | "crepuscule" | "faune" | "nocturne";
 
 export type Print = {
   id: number;

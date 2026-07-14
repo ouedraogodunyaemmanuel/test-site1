@@ -4,10 +4,12 @@ import type { CategoryFilterOption } from "@/types/CategoryFilter";
 // Category filters displayed above the gallery.
 export const FILTRES: CategoryFilterOption[] = [
   { value: "tous", label: "Tous" },
-  { value: "montagne", label: "Montagne" },
-  { value: "mer", label: "Mer" },
-  { value: "desert", label: "Désert" },
-  { value: "foret", label: "Forêt" },
+  { value: "diurne", label: "Diurne" },
+  { value: "enneige", label: "Enneigé" },
+  { value: "aurore", label: "Aurore" },
+  { value: "crepuscule", label: "Crépuscule" },
+  { value: "faune", label: "Faune" },
+  { value: "nocturne", label: "Nocturne" },
 ];
 
 // With no backend yet, the catalog is hardcoded here.
@@ -27,43 +29,43 @@ export const TIRAGES: Print[] = [
   {
     id: 1,
     title: "Ambre",
-    category: "montagne",
+    category: "crepuscule",
     imageFolder: "/images/tirages/ambre",
   },
   {
     id: 2,
     title: "Ivoire",
-    category: "montagne",
+    category: "enneige",
     imageFolder: "/images/tirages/Ivoire",
   },
   {
     id: 3,
     title: "Migration",
-    category: "montagne",
+    category: "aurore",
     imageFolder: "/images/tirages/migration",
   },
   {
     id: 4,
     title: "Roads not taken",
-    category: "montagne",
+    category: "diurne",
     imageFolder: "/images/tirages/roads-not-taken",
   },
   {
     id: 5,
     title: "Sentinelles",
-    category: "montagne",
+    category: "faune",
     imageFolder: "/images/tirages/sentinelles",
   },
   {
     id: 6,
     title: "Vertige",
-    category: "montagne",
+    category: "enneige",
     imageFolder: "/images/tirages/vertige",
   },
   {
     id: 9,
     title: "Traits d'azur",
-    category: "montagne",
+    category: "diurne",
     imageFolder: "/images/tirages/traits-d-azur",
   },
 ];
