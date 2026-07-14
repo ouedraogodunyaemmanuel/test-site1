@@ -27,6 +27,11 @@ export function PrintDetailModal({
   const [selectedFinish, setSelectedFinish] = useState(FINITIONS[0].value);
   // "aucun" (no frame) is the frame shown by default when the modal opens.
   const [selectedFrame, setSelectedFrame] = useState(CADRES[0].value);
+  // The photo's real width/height ratio, reported by PrintImage once
+  // loaded. Used to widen the modal for landscape photos — with a
+  // fixed dialog width, a landscape photo renders much shorter than a
+  // portrait one, so it looks noticeably smaller by comparison.
+  const [knownRatio, setKnownRatio] = useState<number | null>(null);
   // A Set (not a single value) so several dropdowns can stay open at
   // once — picking a sub-option no longer closes its group either,
   // only clicking the group's own button toggles it.
@@ -138,6 +143,9 @@ export function PrintDetailModal({
   }, []);
 
   const isShown = isVisible && !isClosing;
+  // Before the photo loads, guess portrait (matches PrintImage's own
+  // default guess) so the dialog doesn't flash wide then shrink back.
+  const isLandscape = (knownRatio ?? 2 / 3) >= 1;
 
   return (
     <>
@@ -151,9 +159,9 @@ export function PrintDetailModal({
           role="dialog"
           aria-modal="true"
           aria-labelledby="print-detail-title"
-          className={`relative flex max-h-full w-full max-w-4xl flex-col overflow-y-auto bg-stone-50 transition-all duration-200 sm:flex-row ${
-            isShown ? "scale-100 opacity-100" : "scale-95 opacity-0"
-          }`}
+          className={`relative flex max-h-full w-full flex-col overflow-y-auto bg-stone-50 transition-all duration-200 sm:flex-row ${
+            isLandscape ? "max-w-7xl" : "max-w-4xl"
+          } ${isShown ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
           onClick={(event) => event.stopPropagation()}
         >
           <div className="flex w-full shrink-0 items-center justify-center sm:w-3/5">
@@ -165,6 +173,11 @@ export function PrintDetailModal({
               sizes="(min-width: 640px) 60vw, 100vw"
               ajustement="contain"
               containerClassName="w-full"
+              onRatioConnu={setKnownRatio}
+              // Caps the photo's height to a share of the viewport so a
+              // tall portrait photo shrinks on a short browser window
+              // instead of pushing the modal into a scrollbar.
+              hauteurMaximaleClassName="max-h-[70vh]"
             />
           </div>
           <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">

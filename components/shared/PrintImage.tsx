@@ -36,6 +36,13 @@ export function PrintImage({
   // parent (like the justified gallery) can lay out photos using
   // their real proportions.
   onRatioConnu,
+  // Caps the box's height (e.g. "max-h-[70vh]"). The box still starts
+  // from 100% width, but combined with `aspect-ratio`, the browser
+  // re-derives a narrower width whenever the height cap is the
+  // binding constraint — used by PrintDetailModal so a tall portrait
+  // photo shrinks to fit a short browser window instead of forcing a
+  // scrollbar. Left unset, sizing is unchanged (box always full width).
+  hauteurMaximaleClassName = "",
 }: {
   src: string;
   alt: string;
@@ -46,6 +53,7 @@ export function PrintImage({
   ajustement?: "cover" | "contain";
   dimensionnement?: "auto" | "rempli";
   onRatioConnu?: (ratio: number) => void;
+  hauteurMaximaleClassName?: string;
 }) {
   // Real width / real height, known only once the browser has loaded
   // the image. Used in "contain" mode to make the box match the photo
@@ -96,11 +104,11 @@ export function PrintImage({
   const image = (
     <div
       style={ratioConnu ? { aspectRatio: ratioReel } : undefined}
-      className={`relative w-full overflow-hidden ${
+      className={`relative w-full overflow-hidden ${hauteurMaximaleClassName} ${
         ajustement === "contain" ? "bg-white" : "bg-stone-200"
-      } ${ratioConnu ? "" : estPaysage ? "aspect-[3/2]" : "aspect-[2/3]"} ${
-        ajustement === "cover" ? containerClassName : ""
-      }`}
+      } ${
+        ratioConnu ? "" : estPaysage ? "aspect-[3/2]" : "aspect-[2/3]"
+      } ${ajustement === "cover" ? containerClassName : ""}`}
     >
       <Image
         src={src}
@@ -119,8 +127,18 @@ export function PrintImage({
   // Adds the white margin around the photo, outside the box that
   // actually clips/frames the image (padding on that same box would
   // get covered by the `fill` image instead of staying visible).
+  //
+  // Flex + centered: when hauteurMaximaleClassName shrinks the box
+  // below full width (to respect the height cap), this re-centers it
+  // instead of leaving it stuck to one side. With no height cap, the
+  // box still fills 100% width as before, so this has no visible
+  // effect on other callers.
   if (ajustement === "contain") {
-    return <div className={`bg-white p-4 sm:p-6 ${containerClassName}`}>{image}</div>;
+    return (
+      <div className={`flex items-center justify-center bg-white p-4 sm:p-6 ${containerClassName}`}>
+        {image}
+      </div>
+    );
   }
 
   return image;
