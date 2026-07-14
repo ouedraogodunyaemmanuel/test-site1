@@ -7,7 +7,7 @@ export const RATIOS_IMAGES: Record<string, number> = {
   "/images/tirages/ambre": 0.6667,
   "/images/tirages/Ivoire": 1.5,
   "/images/tirages/migration": 1.5,
-  "/images/tirages/roads-not-taken": 1.5002,
+  "/images/tirages/roads-not-taken": 1.5,
   "/images/tirages/sentinelles": 1.5,
   "/images/tirages/traits-d-azur": 0.6667,
   "/images/tirages/vertige": 1.5,
