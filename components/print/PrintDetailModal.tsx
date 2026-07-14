@@ -171,6 +171,13 @@ export function PrintDetailModal({
               src={obtenirUrlImageTirage(print, selectedFrame, selectedFormat)}
               alt={print.title}
               sizes="(min-width: 640px) 60vw, 100vw"
+              // Ces fichiers sont déjà pré-dimensionnés pour cet
+              // affichage (voir la compression des public/images/tirages/*
+              // et scripts/generer-vignettes.mjs) : pas besoin de
+              // repasser par l'optimiseur d'images de Next.js, qui
+              // ajoutait un vrai temps de traitement à chaque nouvelle
+              // taille demandée.
+              unoptimized
               ajustement="contain"
               containerClassName="w-full"
               onRatioConnu={setKnownRatio}

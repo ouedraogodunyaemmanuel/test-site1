@@ -17,3 +17,11 @@ export function obtenirUrlImageTirage(
   }
   return `${tirage.imageFolder}/${cadre}-${format}.jpg`;
 }
+
+// Version légère de la photo "aucun" (voir scripts/generer-vignettes.mjs),
+// utilisée uniquement dans la grille de la galerie : à cette taille
+// d'affichage, la pleine résolution de obtenirUrlImageTirage serait
+// téléchargée pour rien.
+export function obtenirUrlVignetteTirage(tirage: Print): string {
+  return `${tirage.imageFolder}/aucun-vignette.jpg`;
+}

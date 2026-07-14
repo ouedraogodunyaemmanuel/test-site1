@@ -43,6 +43,12 @@ export function PrintImage({
   // photo shrinks to fit a short browser window instead of forcing a
   // scrollbar. Left unset, sizing is unchanged (box always full width).
   hauteurMaximaleClassName = "",
+  // Sert le fichier tel quel, sans passer par l'optimiseur d'images de
+  // Next.js. À réserver aux photos déjà pré-dimensionnées pour leur
+  // contexte d'affichage (voir PrintCard.tsx, PrintDetailModal.tsx) :
+  // sans ça, un aperçu minuscule (ex. le panier, 56px) téléchargerait
+  // le fichier en pleine résolution pour rien.
+  unoptimized = false,
 }: {
   src: string;
   alt: string;
@@ -54,6 +60,7 @@ export function PrintImage({
   dimensionnement?: "auto" | "rempli";
   onRatioConnu?: (ratio: number) => void;
   hauteurMaximaleClassName?: string;
+  unoptimized?: boolean;
 }) {
   // Real width / real height, known only once the browser has loaded
   // the image. Used in "contain" mode to make the box match the photo
@@ -89,6 +96,7 @@ export function PrintImage({
           fill
           priority={priority}
           sizes={sizes}
+          unoptimized={unoptimized}
           onLoad={gererChargement}
           className={`object-cover transition-opacity duration-300 ${
             estCharge ? "opacity-100" : "opacity-0"
@@ -116,6 +124,7 @@ export function PrintImage({
         fill
         priority={priority}
         sizes={sizes}
+        unoptimized={unoptimized}
         onLoad={gererChargement}
         className={`transition-opacity duration-300 ${
           ajustement === "contain" ? "object-contain" : "object-cover"

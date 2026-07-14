@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/calculer-ratios.mjs",
+    "predev": "node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs",
     "dev": "next dev --webpack",
-    "prebuild": "node scripts/calculer-ratios.mjs",
+    "prebuild": "node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

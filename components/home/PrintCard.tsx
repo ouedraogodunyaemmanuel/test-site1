@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
+import { useRef } from "react";
 import type { Print } from "@/types/print";
 import { formaterPrixCHF, PRIX_MINIMUM } from "@/lib/pricing";
-import { obtenirUrlImageTirage } from "@/lib/images";
+import { obtenirUrlImageTirage, obtenirUrlVignetteTirage } from "@/lib/images";
 import { FORMATS } from "@/data/options";
 import { PrintImage } from "@/components/shared/PrintImage";
 
@@ -24,21 +25,42 @@ export function PrintCard({
   // (see gallery-card-enter in globals.css and JustifiedGallery.tsx).
   animationDelayMs?: number;
 }) {
+  // Réchauffe le cache du navigateur avec la photo pleine taille avant
+  // même le clic : ouvrir la modale de détail affiche cette même photo
+  // en beaucoup plus grand (voir PrintDetailModal.tsx), donc sans ce
+  // préchargement, le clic déclenche un tout premier téléchargement de
+  // ce fichier — perceptible comme un temps de chargement. Ne se
+  // déclenche qu'une fois par carte (deuxième survol : plus rien à
+  // faire, déjà en cache).
+  const dejaPrechargee = useRef(false);
+
+  function prechargerImageDetail() {
+    if (dejaPrechargee.current) return;
+    dejaPrechargee.current = true;
+    new window.Image().src = obtenirUrlImageTirage(tirage, "aucun", FORMATS[0].value);
+  }
+
   return (
     <button
       type="button"
       onClick={onOuvrir}
+      onMouseEnter={prechargerImageDetail}
+      onFocus={prechargerImageDetail}
       style={{ ...style, animationDelay: `${animationDelayMs}ms` }}
       className="group relative block overflow-hidden text-left transition-transform active:scale-[0.94] gallery-card-enter"
     >
       <PrintImage
         // No options chosen yet at this stage (just hovering the
         // gallery): we show the "no frame" variant by default — the
-        // format doesn't matter here since "aucun" ignores it.
-        src={obtenirUrlImageTirage(tirage, "aucun", FORMATS[0].value)}
+        // format doesn't matter here since "aucun" ignores it. Uses the
+        // small pre-generated vignette (see lib/images.ts) rather than
+        // the full-resolution photo, since the grid never displays it
+        // that large.
+        src={obtenirUrlVignetteTirage(tirage)}
         alt={tirage.title}
         sizes={sizes}
         dimensionnement="rempli"
+        unoptimized
         onRatioConnu={onRatioConnu}
         imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
       />
