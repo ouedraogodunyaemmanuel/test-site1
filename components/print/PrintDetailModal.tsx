@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
-import { obtenirUrlImageTirage } from "@/lib/images";
+import { obtenirUrlImageTirage, obtenirUrlVignetteTirage } from "@/lib/images";
 import { FORMATS, FINITIONS, CADRES } from "@/data/options";
 import { useCart } from "@/components/cart/CartContext";
 import { PrintImage } from "@/components/shared/PrintImage";
@@ -178,6 +178,14 @@ export function PrintDetailModal({
               // ajoutait un vrai temps de traitement à chaque nouvelle
               // taille demandée.
               unoptimized
+              // Uniquement pour "aucun cadre" : c'est la seule variante
+              // qui a une vignette déjà en cache (la carte de galerie
+              // l'a chargée, et le survol l'a préchargée) — un aperçu
+              // flou pour un cadre coloré chargerait, lui, pour la
+              // première fois, ce qui n'apporterait rien.
+              apercuFlouSrc={
+                selectedFrame === "aucun" ? obtenirUrlVignetteTirage(print) : undefined
+              }
               ajustement="contain"
               containerClassName="w-full"
               onRatioConnu={setKnownRatio}

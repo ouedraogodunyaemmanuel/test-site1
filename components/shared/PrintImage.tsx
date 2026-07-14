@@ -49,6 +49,13 @@ export function PrintImage({
   // sans ça, un aperçu minuscule (ex. le panier, 56px) téléchargerait
   // le fichier en pleine résolution pour rien.
   unoptimized = false,
+  // Chemin d'une version très légère (vignette) de la même photo,
+  // affichée immédiatement en fond flou pendant que la vraie image
+  // charge, plutôt que de laisser une boîte vide. N'a de sens que si
+  // cette version légère est déjà en cache (voir le préchargement au
+  // survol dans PrintCard.tsx) — sinon elle chargerait, elle aussi,
+  // pour la première fois.
+  apercuFlouSrc,
 }: {
   src: string;
   alt: string;
@@ -61,6 +68,7 @@ export function PrintImage({
   onRatioConnu?: (ratio: number) => void;
   hauteurMaximaleClassName?: string;
   unoptimized?: boolean;
+  apercuFlouSrc?: string;
 }) {
   // Real width / real height, known only once the browser has loaded
   // the image. Used in "contain" mode to make the box match the photo
@@ -87,9 +95,35 @@ export function PrintImage({
     onRatioConnu?.(ratio);
   }
 
+  // Zoomé à 110% et flouté, pour cacher les bords qui deviendraient
+  // visibles à cause du flou lui-même. Reste sous la vraie photo tout
+  // du long : une fois celle-ci chargée et opaque, il est simplement
+  // recouvert — pas besoin de le faire disparaître explicitement.
+  const apercuFlou = apercuFlouSrc ? (
+    <img
+      src={apercuFlouSrc}
+      alt=""
+      aria-hidden="true"
+      className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl"
+    />
+  ) : null;
+
+  // Le fondu "sec" a été remplacé par un effet plus doux, à trois
+  // dimensions à la fois : la photo arrive légèrement zoomée et floue,
+  // puis se stabilise nette à sa taille normale — comme une mise au
+  // point d'appareil photo, plutôt qu'un simple "pop".
+  const transitionChargement = `transition-all duration-500 ease-out ${
+    estCharge ? "scale-100 opacity-100 blur-none" : "scale-105 opacity-0 blur-md"
+  }`;
+
   if (dimensionnement === "rempli") {
     return (
-      <div className={`relative h-full w-full overflow-hidden bg-stone-200 ${containerClassName}`}>
+      <div
+        className={`relative h-full w-full overflow-hidden bg-stone-200 ${
+          estCharge ? "" : "animate-pulse"
+        } ${containerClassName}`}
+      >
+        {apercuFlou}
         <Image
           src={src}
           alt={alt}
@@ -98,9 +132,7 @@ export function PrintImage({
           sizes={sizes}
           unoptimized={unoptimized}
           onLoad={gererChargement}
-          className={`object-cover transition-opacity duration-300 ${
-            estCharge ? "opacity-100" : "opacity-0"
-          } ${imageClassName}`}
+          className={`object-cover ${transitionChargement} ${imageClassName}`}
         />
       </div>
     );
@@ -114,10 +146,11 @@ export function PrintImage({
       style={ratioConnu ? { aspectRatio: ratioReel } : undefined}
       className={`relative w-full overflow-hidden ${hauteurMaximaleClassName} ${
         ajustement === "contain" ? "bg-white" : "bg-stone-200"
-      } ${
+      } ${estCharge ? "" : "animate-pulse"} ${
         ratioConnu ? "" : estPaysage ? "aspect-[3/2]" : "aspect-[2/3]"
       } ${ajustement === "cover" ? containerClassName : ""}`}
     >
+      {apercuFlou}
       <Image
         src={src}
         alt={alt}
@@ -126,9 +159,9 @@ export function PrintImage({
         sizes={sizes}
         unoptimized={unoptimized}
         onLoad={gererChargement}
-        className={`transition-opacity duration-300 ${
+        className={`${
           ajustement === "contain" ? "object-contain" : "object-cover"
-        } ${estCharge ? "opacity-100" : "opacity-0"} ${imageClassName}`}
+        } ${transitionChargement} ${imageClassName}`}
       />
     </div>
   );
