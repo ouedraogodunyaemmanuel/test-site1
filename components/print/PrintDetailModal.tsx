@@ -31,7 +31,15 @@ export function PrintDetailModal({
   // loaded. Used to widen the modal for landscape photos — with a
   // fixed dialog width, a landscape photo renders much shorter than a
   // portrait one, so it looks noticeably smaller by comparison.
+  //
+  // Locked in on the first report and ignored afterwards: every frame/
+  // format variant is meant to share the base photo's orientation, so
+  // the dialog should keep the same width while the customer switches
+  // options, not resize on every click.
   const [knownRatio, setKnownRatio] = useState<number | null>(null);
+  const handleRatioKnown = useCallback((ratio: number) => {
+    setKnownRatio((current) => current ?? ratio);
+  }, []);
   // A Set (not a single value) so several dropdowns can stay open at
   // once — picking a sub-option no longer closes its group either,
   // only clicking the group's own button toggles it.
@@ -222,7 +230,7 @@ export function PrintDetailModal({
               }
               ajustement="contain"
               containerClassName="w-full"
-              onRatioConnu={setKnownRatio}
+              onRatioConnu={handleRatioKnown}
               // Caps the photo's height to a share of the viewport so a
               // tall portrait photo shrinks on a short browser window
               // instead of pushing the modal into a scrollbar.

@@ -84,16 +84,11 @@ export function PrintImage({
   // the four sides (on top of the padding below), making the white
   // margin look uneven.
   //
-  // Recalculated on EVERY load, not just the first: in PrintDetailModal,
-  // `src` changes every time the customer picks a different format or
-  // frame — and unlike what the name "variante" suggests, those photos
-  // don't actually share the same proportions (a framed mockup photo is
-  // shot differently per frame/format, not just resized). Freezing the
-  // ratio on the first load left the box the wrong shape for every
-  // other variant, which is exactly the uneven-margin problem this
-  // ratio was meant to avoid. The resize itself is animated (see
-  // `transition-[aspect-ratio]` below) so it reads as part of the
-  // existing photo fade/zoom, not a layout jump.
+  // Locked in on the FIRST load and never updated afterwards: in
+  // PrintDetailModal, `src` changes every time the customer picks a
+  // different format or frame, and every variant is meant to share the
+  // same proportions as the base photo — so the card should stay the
+  // same size while browsing options, not resize on every click.
   const [ratioReel, setRatioReel] = useState<number | null>(null);
   const [estCharge, setEstCharge] = useState(false);
   // Dernière photo qui était déjà pleinement affichée avant que `src`
@@ -123,7 +118,7 @@ export function PrintImage({
   function gererChargement(evenement: React.SyntheticEvent<HTMLImageElement>) {
     const cible = evenement.currentTarget;
     const ratio = cible.naturalWidth / cible.naturalHeight;
-    setRatioReel(ratio);
+    setRatioReel((ratioActuel) => ratioActuel ?? ratio);
     setEstCharge(true);
     onRatioConnu?.(ratio);
   }
