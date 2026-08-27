@@ -4,11 +4,11 @@
 // Maps a print's `imageFolder` (data/prints.ts) to the real
 // width/height ratio of its "aucun.jpg" file.
 export const RATIOS_IMAGES: Record<string, number> = {
-  "/images/tirages/ambre": 0.6667,
-  "/images/tirages/Ivoire": 1.5,
-  "/images/tirages/migration": 1.5,
-  "/images/tirages/roads-not-taken": 1.5,
-  "/images/tirages/sentinelles": 1.5,
-  "/images/tirages/traits-d-azur": 0.6667,
-  "/images/tirages/vertige": 1.5,
+  "/images/tirages/ambre": 0.6669,
+  "/images/tirages/Ivoire": 1.4995,
+  "/images/tirages/migration": 1.4995,
+  "/images/tirages/roads-not-taken": 1.4995,
+  "/images/tirages/sentinelles": 1.4995,
+  "/images/tirages/traits-d-azur": 0.6669,
+  "/images/tirages/vertige": 1.4995,
 };
