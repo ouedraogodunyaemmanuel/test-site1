@@ -83,3 +83,8 @@ Pour toute génération ou modification de code non trivial :
   abstraits
 - Quand un choix est fait à ma place (nom de convention, structure de
   dossier, etc.), le mentionner brièvement plutôt que de l'imposer en silence
+
+## Production de code 
+
+- Produit un code organisé
+- Les noms de variable, les commentaire et tout ce que tu écrit dans le code doit être en ANGLAIS
