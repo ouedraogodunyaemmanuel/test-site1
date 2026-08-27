@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
 import { obtenirUrlImageTirage, obtenirUrlVignetteTirage } from "@/lib/images";
@@ -36,6 +36,10 @@ export function PrintDetailModal({
   // once — picking a sub-option no longer closes its group either,
   // only clicking the group's own button toggles it.
   const [openGroups, setOpenGroups] = useState<Set<OptionGroupName>>(new Set());
+  // URLs déjà lancées en préchargement, pour ne pas retélécharger la
+  // même variante à chaque ouverture d'un menu (voir prechargerVariante
+  // ci-dessous).
+  const variantesDejaPrechargees = useRef<Set<string>>(new Set());
   // Shown when the customer tries to add a print without a frame, so
   // they can confirm this choice on purpose (whatever format/finish
   // they picked otherwise).
@@ -60,7 +64,37 @@ export function PrintDetailModal({
     setTimeout(onClose, ANIMATION_DURATION_MS);
   }, [onClose]);
 
+  // Lance le téléchargement d'une variante en arrière-plan, sans
+  // l'afficher (voir PrintCard.tsx qui utilise la même technique pour
+  // réchauffer le cache du navigateur avant que la variante soit
+  // réellement affichée).
+  function prechargerVariante(cadre: string, format: string) {
+    const url = obtenirUrlImageTirage(print, cadre, format);
+    if (variantesDejaPrechargees.current.has(url)) return;
+    variantesDejaPrechargees.current.add(url);
+    new window.Image().src = url;
+  }
+
+  // Précharge toutes les variantes d'un groupe d'options dès son
+  // ouverture (pas seulement au survol d'une option précise) : sur
+  // tactile, il n'y a pas d'événement "survol" avant le tap qui
+  // sélectionne l'option, donc l'ouverture du menu est le seul moment
+  // où on peut anticiper le choix.
+  function prechargerVariantesDuGroupe(name: OptionGroupName) {
+    if (name === "format") {
+      FORMATS.forEach((format) => prechargerVariante(selectedFrame, format.value));
+    } else if (name === "cadre") {
+      CADRES.forEach((cadre) => prechargerVariante(cadre.value, selectedFormat));
+    }
+  }
+
   function toggleGroup(name: OptionGroupName) {
+    // Le préchargement (un effet de bord) est déclenché ici plutôt que
+    // dans la fonction passée à setOpenGroups, qui doit rester pure —
+    // React peut l'appeler plusieurs fois par rendu (StrictMode).
+    if (!openGroups.has(name)) {
+      prechargerVariantesDuGroupe(name);
+    }
     setOpenGroups((current) => {
       const next = new Set(current);
       if (next.has(name)) {
@@ -192,7 +226,7 @@ export function PrintDetailModal({
               // Caps the photo's height to a share of the viewport so a
               // tall portrait photo shrinks on a short browser window
               // instead of pushing the modal into a scrollbar.
-              hauteurMaximaleClassName="max-h-[70vh]"
+              hauteurMaximaleVh={70}
             />
           </div>
           <div className="flex w-full flex-col justify-between p-8 sm:w-2/5">
