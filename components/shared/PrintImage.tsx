@@ -157,13 +157,23 @@ export function PrintImage({
     />
   ) : null;
 
-  // Le fondu "sec" a été remplacé par un effet plus doux, à trois
-  // dimensions à la fois : la photo arrive légèrement zoomée et floue,
-  // puis se stabilise nette à sa taille normale — comme une mise au
-  // point d'appareil photo, plutôt qu'un simple "pop".
-  const transitionChargement = `transition-all duration-500 ease-out ${
-    estCharge ? "scale-100 opacity-100 blur-none" : "scale-105 opacity-0 blur-md"
-  }`;
+  // Two different load-in effects depending on context:
+  // - Gallery grid ("rempli"): a plain, quick opacity fade. Grid photos
+  //   are small and their load timing doesn't line up with the card's
+  //   own entrance animation (see gallery-card-enter in globals.css) —
+  //   a heavier zoom/blur effect popping in late, out of sync, reads as
+  //   a jerk. A short fade stays unobtrusive even when it lands after
+  //   the card has already settled.
+  // - Everywhere else (the detail modal's big hero photo): the fuller
+  //   "camera focus" effect — arrives slightly zoomed and blurred, then
+  //   settles sharp at normal size — reads well at that size since
+  //   there's no competing entrance animation to stay in sync with.
+  const transitionChargement =
+    dimensionnement === "rempli"
+      ? `transition-opacity duration-300 ease-out ${estCharge ? "opacity-100" : "opacity-0"}`
+      : `transition-all duration-500 ease-out ${
+          estCharge ? "scale-100 opacity-100 blur-none" : "scale-105 opacity-0 blur-md"
+        }`;
 
   if (dimensionnement === "rempli") {
     return (

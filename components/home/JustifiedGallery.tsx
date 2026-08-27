@@ -130,6 +130,10 @@ export function JustifiedGallery({
                 // Staggered by position, capped so a large gallery
                 // doesn't end up with a long tail of slow entrances.
                 animationDelayMs={Math.min(index, 12) * 80}
+                // First few photos are above the fold — skip lazy-load
+                // scheduling so they start downloading immediately,
+                // keeping pace with their own entrance animation.
+                priority={index < 3}
               />
             );
           })}
