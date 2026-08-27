@@ -86,3 +86,85 @@ body {
     animation: none;
   }
 }
+
+/* Homepage hero entrance: a circular reveal evoking a camera aperture
+   opening, in place of a plain fade — see HeroSection.tsx, which:
+   - starts the reveal only once the (large, unoptimized) hero photo
+     has actually finished loading, not on a fixed timer, so it never
+     opens onto a still-blank image on a slow connection;
+   - gates it behind sessionStorage so it only plays once per session,
+     not on every visit to the homepage.
+
+   Three states, applied/swapped via refs (see HeroSection.tsx):
+   - .hero-aperture-closed  — resting "shutter closed" state, present
+     from the very first paint (server-rendered), so there's no flash
+     of an unrevealed photo before JS runs.
+   - .hero-aperture-open    — plays the opening animation once, when
+     applied in place of the closed class.
+   - neither class          — fully open, no clip restriction (the
+     settled end state, also used to skip straight there on a repeat
+     visit this session). */
+.hero-aperture-closed {
+  clip-path: circle(0% at 50% 50%);
+}
+
+@keyframes aperture-open {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    /* Overshoots 100%: a circle inscribed at exactly 100% of the
+       shorter dimension doesn't reach the far corners of a wider
+       rectangle, which would leave dark slivers there. */
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+.hero-aperture-open {
+  /* Static fallback matching the animation's end state, so disabling
+     the animation below (prefers-reduced-motion) still lands fully
+     open instead of stuck at the "from" state. */
+  clip-path: circle(150% at 50% 50%);
+  animation: aperture-open 900ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cascades the hero's title/subtitle/button in, staggered via
+   `animation-delay` set inline per element (see HeroSection.tsx), once
+   the photo has loaded and the aperture starts opening. `.hero-text-
+   pending` is the resting "not yet revealed" state (present from the
+   first paint, swapped for `.hero-content-enter` the same way as the
+   aperture classes above). */
+.hero-text-pending {
+  opacity: 0;
+}
+
+@keyframes hero-content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-content-enter {
+  opacity: 1;
+  animation: hero-content-enter 600ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aperture-closed,
+  .hero-aperture-open,
+  .hero-text-pending,
+  .hero-content-enter {
+    /* Skips straight to fully open/visible instead of animating —
+       clip-path/opacity restrictions above are overridden here rather
+       than relying on `animation: none` alone, since the "closed"/
+       "pending" resting classes aren't animations to begin with. */
+    animation: none;
+    clip-path: none;
+    opacity: 1;
+  }
+}
