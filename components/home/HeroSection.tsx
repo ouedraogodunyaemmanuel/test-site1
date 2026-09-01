@@ -1,22 +1,30 @@
-import Image from "next/image";
-
 export function HeroSection() {
   return (
     <section className="relative flex h-[85vh] min-h-[520px] items-end overflow-hidden bg-white">
       <div className="absolute inset-0">
-        <Image
-          src="/images/HeroSection/hero-section.jpg"
-          alt="Paysage mis en avant"
-          fill
-          priority
-          // Serves the original file as-is, bypassing Next.js's image
-          // optimizer (which resizes and recompresses by default — that
-          // was causing the quality loss). Deliberate: this is the only
-          // photo on the site shown this large, so the original file's
-          // weight (~5.4 MB) stays acceptable.
-          unoptimized
-          className="object-cover"
-        />
+        {/* Plain <picture>, not next/image: the desktop file is already
+            served as-is (see hero-section-mobile.jpg's own comment in
+            scripts/generer-hero-mobile.mjs for why), and next/image has
+            no built-in way to swap to a different *file* by screen size
+            — only to different resolutions of the same one. The browser
+            picks a source by evaluating `media` before downloading
+            anything, so a phone never fetches the ~5 MB desktop photo. */}
+        <picture>
+          <source
+            media="(max-width: 640px)"
+            srcSet="/images/HeroSection/hero-section-mobile.jpg"
+          />
+          <img
+            src="/images/HeroSection/hero-section.jpg"
+            alt="Paysage mis en avant"
+            // Signals to the browser that this is a high-priority
+            // resource to fetch early — the equivalent of next/image's
+            // `priority` prop, which isn't available here since this
+            // isn't a next/image <Image>.
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </picture>
       </div>
       {/* Dark overlay to keep the text readable regardless of the photo */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />

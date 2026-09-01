@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/redimensionner-photos-detail.mjs && node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs",
+    "predev": "node scripts/redimensionner-photos-detail.mjs && node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs && node scripts/generer-hero-mobile.mjs",
     "dev": "next dev --webpack",
-    "prebuild": "node scripts/redimensionner-photos-detail.mjs && node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs",
+    "prebuild": "node scripts/redimensionner-photos-detail.mjs && node scripts/calculer-ratios.mjs && node scripts/generer-vignettes.mjs && node scripts/generer-hero-mobile.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
