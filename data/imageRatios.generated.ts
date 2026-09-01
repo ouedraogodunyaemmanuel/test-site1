@@ -5,10 +5,10 @@
 // width/height ratio of its "aucun.jpg" file.
 export const RATIOS_IMAGES: Record<string, number> = {
   "/images/tirages/ambre": 0.6669,
-  "/images/tirages/Ivoire": 1.4995,
-  "/images/tirages/migration": 1.4995,
-  "/images/tirages/roads-not-taken": 1.4995,
-  "/images/tirages/sentinelles": 1.4995,
+  "/images/tirages/Ivoire": 1.4994,
+  "/images/tirages/migration": 1.4994,
+  "/images/tirages/roads-not-taken": 1.4994,
+  "/images/tirages/sentinelles": 1.4994,
   "/images/tirages/traits-d-azur": 0.6669,
-  "/images/tirages/vertige": 1.4995,
+  "/images/tirages/vertige": 1.4994,
 };
