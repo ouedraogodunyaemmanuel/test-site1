@@ -8,10 +8,11 @@ import { useState, type CSSProperties } from "react";
 // keeps a tall one, instead of forcing every photo into the same
 // shape and cropping part of it away.
 //
-// The catalog (data/prints.ts) only stores a folder path, not the
-// image's real dimensions, so we can't know the orientation ahead of
-// time. We start with a portrait frame (the site's previous default)
-// and switch to the photo's exact real ratio once the browser has
+// When the caller already knows the ratio ahead of time (see
+// `knownRatio` below — PrintDetailModal passes the one precomputed in
+// data/imageRatios.generated.ts), the box uses it immediately. If not,
+// we start with a portrait frame (the site's previous default) and
+// switch to the photo's exact real ratio once the browser has
 // actually loaded it and told us its real width/height.
 export function PrintImage({
   src,
@@ -20,6 +21,12 @@ export function PrintImage({
   priority,
   containerClassName = "",
   imageClassName = "",
+  // The photo's real width/height ratio, when the caller already knows
+  // it ahead of time (see data/imageRatios.generated.ts) — avoids a
+  // wrong "guess portrait" flash for a landscape photo while it loads.
+  // Still gets confirmed by the actual `onLoad` below, in case a print
+  // is missing from that generated table.
+  knownRatio,
   // "cover" fills the frame and crops what doesn't fit. "contain"
   // always shows the photo in full, with a bit of white margin
   // around it — needed in the detail modal because our photos already
@@ -76,8 +83,10 @@ export function PrintImage({
   hauteurMaximaleVh?: number;
   unoptimized?: boolean;
   apercuFlouSrc?: string;
+  knownRatio?: number;
 }) {
-  // Real width / real height, known only once the browser has loaded
+  // Real width / real height. Seeded from `knownRatio` when the caller
+  // already has it, otherwise known only once the browser has loaded
   // the image. Used in "contain" mode to make the box match the photo
   // exactly — otherwise a mismatch between the box's ratio and the
   // photo's real ratio would leave extra empty space on only two of
@@ -89,7 +98,7 @@ export function PrintImage({
   // different format or frame, and every variant is meant to share the
   // same proportions as the base photo — so the card should stay the
   // same size while browsing options, not resize on every click.
-  const [ratioReel, setRatioReel] = useState<number | null>(null);
+  const [ratioReel, setRatioReel] = useState<number | null>(knownRatio ?? null);
   const [estCharge, setEstCharge] = useState(false);
   // Dernière photo qui était déjà pleinement affichée avant que `src`
   // ne change (ex. le client choisit un autre cadre ou format dans

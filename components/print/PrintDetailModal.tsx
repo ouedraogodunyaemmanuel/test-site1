@@ -5,6 +5,7 @@ import type { OptionGroupName, Print, SelectOption } from "@/types/print";
 import { calculerPrix, formaterPrixCHF } from "@/lib/pricing";
 import { obtenirUrlImageTirage, obtenirUrlVignetteTirage } from "@/lib/images";
 import { FORMATS, FINITIONS, CADRES } from "@/data/options";
+import { RATIOS_IMAGES } from "@/data/imageRatios.generated";
 import { useCart } from "@/components/cart/CartContext";
 import { PrintImage } from "@/components/shared/PrintImage";
 import { OptionGroup } from "./OptionGroup";
@@ -27,16 +28,25 @@ export function PrintDetailModal({
   const [selectedFinish, setSelectedFinish] = useState(FINITIONS[0].value);
   // "aucun" (no frame) is the frame shown by default when the modal opens.
   const [selectedFrame, setSelectedFrame] = useState(CADRES[0].value);
-  // The photo's real width/height ratio, reported by PrintImage once
-  // loaded. Used to widen the modal for landscape photos — with a
-  // fixed dialog width, a landscape photo renders much shorter than a
-  // portrait one, so it looks noticeably smaller by comparison.
+  // The photo's real width/height ratio. Used to widen the modal for
+  // landscape photos — with a fixed dialog width, a landscape photo
+  // renders much shorter than a portrait one, so it looks noticeably
+  // smaller by comparison.
   //
-  // Locked in on the first report and ignored afterwards: every frame/
-  // format variant is meant to share the base photo's orientation, so
-  // the dialog should keep the same width while the customer switches
-  // options, not resize on every click.
-  const [knownRatio, setKnownRatio] = useState<number | null>(null);
+  // Seeded from the ratio already precomputed for this print's base
+  // "aucun.jpg" file (see data/imageRatios.generated.ts) so the dialog
+  // opens at the right width immediately, instead of guessing portrait
+  // and flashing wide once the photo actually loads. Every frame/format
+  // variant shares that same base photo's orientation, so this is valid
+  // no matter which one is initially selected.
+  //
+  // Locked in on the first value (this seed, or the first `onRatioConnu`
+  // report if a print is somehow missing from that generated table) and
+  // ignored afterwards: the dialog should keep the same width while the
+  // customer switches options, not resize on every click.
+  const [knownRatio, setKnownRatio] = useState<number | null>(
+    RATIOS_IMAGES[print.imageFolder] ?? null,
+  );
   const handleRatioKnown = useCallback((ratio: number) => {
     setKnownRatio((current) => current ?? ratio);
   }, []);
@@ -185,8 +195,8 @@ export function PrintDetailModal({
   }, []);
 
   const isShown = isVisible && !isClosing;
-  // Before the photo loads, guess portrait (matches PrintImage's own
-  // default guess) so the dialog doesn't flash wide then shrink back.
+  // Falls back to guessing portrait only if this print were somehow
+  // missing from data/imageRatios.generated.ts (see knownRatio above).
   const isLandscape = (knownRatio ?? 2 / 3) >= 1;
 
   return (
@@ -230,6 +240,7 @@ export function PrintDetailModal({
               }
               ajustement="contain"
               containerClassName="w-full"
+              knownRatio={RATIOS_IMAGES[print.imageFolder]}
               onRatioConnu={handleRatioKnown}
               // Caps the photo's height to a share of the viewport so a
               // tall portrait photo shrinks on a short browser window
