@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useCart } from "@/components/cart/CartContext";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -16,6 +16,25 @@ const LIENS_NAV = [
 export function Header() {
   const [menuOuvert, setMenuOuvert] = useState(false);
   const { openCart, itemCount } = useCart();
+
+  const enTeteRef = useRef<HTMLElement>(null);
+  const [hauteurEntete, setHauteurEntete] = useState(0);
+
+  // Le calque du menu se glisse sous l'en-tête plutôt que par-dessus
+  // (voir plus bas) : il faut donc connaître sa hauteur réelle, qui
+  // diffère selon la police chargée (voir HeroSection.tsx, même
+  // technique).
+  useEffect(() => {
+    function mesurer() {
+      if (enTeteRef.current) {
+        setHauteurEntete(enTeteRef.current.getBoundingClientRect().height);
+      }
+    }
+    mesurer();
+    window.addEventListener("resize", mesurer);
+    document.fonts?.ready.then(mesurer);
+    return () => window.removeEventListener("resize", mesurer);
+  }, []);
 
   useEffect(() => {
     if (!menuOuvert) return;
@@ -40,8 +59,13 @@ export function Header() {
   return (
     <>
       {/* `bg-fond-voile` : l'en-tête reste lisible par-dessus la photo
-          du hero, qui défile sous lui. */}
-      <header className="sticky top-0 z-40 bg-[var(--fond-voile)] backdrop-blur-md">
+          du hero, qui défile sous lui. Reste affiché à l'identique
+          quand le menu est ouvert (voir plus bas) : la croix animée,
+          « DEO CRÉATION » et le panier ne doivent pas bouger. */}
+      <header
+        ref={enTeteRef}
+        className="sticky top-0 z-40 bg-[var(--fond-voile)] backdrop-blur-md"
+      >
         <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-6 py-5 sm:px-10">
           <div className="flex items-center">
             <nav className="hidden gap-8 text-xs tracking-[0.14em] uppercase text-attenue md:flex">
@@ -106,27 +130,19 @@ export function Header() {
       {/* Rendu hors de <header> via un portail : l'en-tête a son propre
           backdrop-blur (filter), qui — comme un transform — établit un
           nouveau bloc de référence pour tout descendant `fixed`. Rendu
-          à l'intérieur, ce calque se positionnait donc par rapport à
-          l'en-tête (64px de haut) et non par rapport à l'écran entier :
-          seul le premier bandeau recevait un fond peint, le reste du
-          menu se contentait de déborder par-dessus la page, sans fond. */}
+          à l'intérieur, ce calque se positionnait par rapport à
+          l'en-tête et non par rapport à l'écran entier.
+
+          Commence sous l'en-tête (`top: hauteurEntete`, pas
+          `inset-0`) au lieu de le recouvrir : la croix animée,
+          « DEO CRÉATION » et le panier restent visibles à leur place
+          exacte, sans bandeau de titre dupliqué par-dessus. */}
       {menuOuvert &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex flex-col bg-fond md:hidden">
-            <div className="flex items-center justify-between px-[22px] py-5">
-              <span className="font-serif text-sm tracking-[0.28em] text-encre">
-                DEO CRÉATION
-              </span>
-              <button
-                type="button"
-                onClick={() => setMenuOuvert(false)}
-                aria-label="Fermer le menu"
-                className="text-xl leading-none text-attenue"
-              >
-                ×
-              </button>
-            </div>
-
+          <div
+            style={{ top: hauteurEntete }}
+            className="fixed inset-x-0 bottom-0 z-30 flex flex-col bg-fond md:hidden"
+          >
             <nav className="flex flex-1 flex-col px-[26px] py-10">
               {LIENS_NAV.map((lien) => (
                 <Link
