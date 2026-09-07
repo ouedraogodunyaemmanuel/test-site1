@@ -64,11 +64,11 @@ export function OrderSummary() {
   return (
     <div className="mt-8 space-y-10">
       <section>
-        <h2 className="font-serif text-xl text-stone-900">Articles</h2>
-        <div className="mt-4 divide-y divide-stone-200">
+        <h2 className="font-serif text-xl text-encre">Articles</h2>
+        <div className="mt-4 divide-y divide-filet">
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-4 py-4">
-              <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-stone-200">
+              <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-panneau">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -78,20 +78,20 @@ export function OrderSummary() {
                 />
               </div>
               <div className="flex-1 text-sm">
-                <p className="text-stone-900">
+                <p className="text-encre">
                   {item.title} × {item.quantity}
                 </p>
-                <p className="text-stone-500">
+                <p className="text-attenue">
                   {item.formatLabel} · {item.finishLabel} · {item.frameLabel}
                 </p>
               </div>
-              <p className="text-stone-900">
+              <p className="text-encre">
                 {formaterPrixCHF(item.unitPrice * item.quantity)}
               </p>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex items-center justify-between text-lg text-stone-900">
+        <div className="mt-4 flex items-center justify-between text-lg text-encre">
           <span>Total</span>
           <span>{formaterPrixCHF(totalPrice)}</span>
         </div>
@@ -99,15 +99,15 @@ export function OrderSummary() {
 
       <section>
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-xl text-stone-900">Livraison</h2>
+          <h2 className="font-serif text-xl text-encre">Livraison</h2>
           <Link
             href="/commande/livraison"
-            className="text-sm text-stone-500 underline transition-colors hover:text-stone-900"
+            className="text-sm text-attenue underline transition-colors hover:text-encre"
           >
             Modifier
           </Link>
         </div>
-        <p className="mt-3 text-stone-600 leading-relaxed">
+        <p className="mt-3 text-texte leading-relaxed">
           {delivery.firstName} {delivery.lastName}
           <br />
           {delivery.street}
@@ -124,7 +124,7 @@ export function OrderSummary() {
         type="button"
         onClick={gererConfirmation}
         disabled={enCoursDePaiement}
-        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.93] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
+        className="w-full bg-accent px-6 py-3 text-sm tracking-wide text-fond transition hover:opacity-90 active:scale-[0.93] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         {enCoursDePaiement ? "Redirection en cours…" : "Confirmer et payer"}
       </button>

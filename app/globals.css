@@ -1,29 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   Thème — mode sombre par défaut, mode clair sur [data-theme="clair"].
+   ThemeProvider pose l'attribut sur <html>.
+   ------------------------------------------------------------------ */
+
+:root,
+[data-theme="sombre"] {
+  --fond: #14120f;
+  --fond-profond: #0b0a09;
+  --panneau: #1e1b17;
+  --filet: #2c2823;
+  --filet-fort: #3a342c;
+  --encre: #efe9df;
+  --texte: #a79d90;
+  --attenue: #948b7f;
+  --faible: #6e665c;
+  --accent: #b58455;
+  --accent-clair: #dfae7c;
+  --fond-voile: rgb(20 18 15 / 0.93);
+  --scrim: rgb(11 10 9 / 0.75);
+}
+
+[data-theme="clair"] {
+  --fond: #f6f3ee;
+  --fond-profond: #e7e2d9;
+  --panneau: #ebe6de;
+  --filet: #dfd8ce;
+  --filet-fort: #cfc8bc;
+  --encre: #1c1a17;
+  --texte: #4f4941;
+  --attenue: #7a736a;
+  --faible: #8c857a;
+  --accent: #8a6034;
+  --accent-clair: #6e4b27;
+  --fond-voile: rgb(246 243 238 / 0.93);
+  --scrim: rgb(28 26 23 / 0.45);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-playfair);
+
+  --color-fond: var(--fond);
+  --color-fond-profond: var(--fond-profond);
+  --color-panneau: var(--panneau);
+  --color-filet: var(--filet);
+  --color-filet-fort: var(--filet-fort);
+  --color-encre: var(--encre);
+  --color-texte: var(--texte);
+  --color-attenue: var(--attenue);
+  --color-faible: var(--faible);
+  --color-accent: var(--accent);
+  --color-accent-clair: var(--accent-clair);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Le `font-family: Arial` qui était ici écrasait Geist et Playfair
+   chargés dans layout.tsx : les polices du site ne s'appliquaient
+   jamais au corps de texte. */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+a {
+  color: var(--accent-clair);
+}
+
+a:hover {
+  color: var(--accent);
 }
 
 @keyframes loading-line {
@@ -54,12 +101,6 @@ body {
   animation: page-enter 500ms ease-out;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .page-enter {
-    animation: none;
-  }
-}
-
 /* Plays on every card in the gallery whenever the set of photos
    shown changes (e.g. picking a different category filter) — see
    JustifiedGallery.tsx, which forces a fresh mount per card by
@@ -81,9 +122,18 @@ body {
   animation: gallery-card-enter 800ms ease-out both;
 }
 
+/* Rails de filtres et colonnes défilantes : pas de barre visible. */
+.rail-sans-barre {
+  scrollbar-width: none;
+}
+
+.rail-sans-barre::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .page-enter,
   .gallery-card-enter {
     animation: none;
   }
 }
-

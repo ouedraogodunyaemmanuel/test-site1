@@ -3,7 +3,7 @@
 // publishing the page online.
 export function ACompleter({ children }: { children: string }) {
   return (
-    <mark className="rounded bg-amber-200 px-1 py-0.5 text-stone-900">
+    <mark className="rounded bg-amber-200 px-1 py-0.5 text-black">
       [À compléter : {children}]
     </mark>
   );

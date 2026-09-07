@@ -187,7 +187,7 @@ export function PrintImage({
   if (dimensionnement === "rempli") {
     return (
       <div
-        className={`relative h-full w-full overflow-hidden bg-stone-200 ${
+        className={`relative h-full w-full overflow-hidden bg-panneau ${
           boiteVide ? "animate-pulse" : ""
         } ${containerClassName}`}
       >
@@ -225,7 +225,7 @@ export function PrintImage({
     <div
       style={styleBoite}
       className={`relative w-full overflow-hidden ${
-        ajustement === "contain" ? "bg-white transition-all duration-500 ease-out" : "bg-stone-200"
+        ajustement === "contain" ? "bg-panneau transition-all duration-500 ease-out" : "bg-panneau"
       } ${boiteVide ? "animate-pulse" : ""} ${
         ratioConnu ? "" : estPaysage ? "aspect-[3/2]" : "aspect-[2/3]"
       } ${ajustement === "cover" ? containerClassName : ""}`}
@@ -258,7 +258,7 @@ export function PrintImage({
   // callers.
   if (ajustement === "contain") {
     return (
-      <div className={`flex items-center justify-center bg-white p-4 sm:p-6 ${containerClassName}`}>
+      <div className={`flex items-center justify-center bg-panneau p-4 sm:p-6 ${containerClassName}`}>
         {image}
       </div>
     );

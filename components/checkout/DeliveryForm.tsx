@@ -86,7 +86,7 @@ export function DeliveryForm() {
       </div>
       <button
         type="submit"
-        className="w-full bg-stone-900 px-6 py-3 text-sm tracking-wide text-stone-50 transition hover:bg-stone-700 active:scale-[0.93]"
+        className="w-full bg-accent px-6 py-3 text-sm tracking-wide text-fond transition hover:opacity-90 active:scale-[0.93]"
       >
         Continuer vers le récapitulatif
       </button>
@@ -109,7 +109,7 @@ function Champ({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm text-stone-600">
+      <label htmlFor={id} className="block text-sm text-texte">
         {label}
       </label>
       <input
@@ -119,7 +119,7 @@ function Champ({
         required
         value={value}
         onChange={onChange}
-        className="mt-1 w-full border border-stone-300 px-4 py-2 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
+        className="mt-1 w-full border border-filet bg-fond px-4 py-2 text-sm text-encre focus:border-accent focus:outline-none"
       />
     </div>
   );

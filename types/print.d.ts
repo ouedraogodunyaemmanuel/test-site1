@@ -26,7 +26,3 @@ export type SelectOption = {
   value: string;
   label: string;
 };
-
-// Name of the three customizable option groups in the print detail
-// modal (used to know which one is currently open).
-export type OptionGroupName = "format" | "finition" | "cadre";

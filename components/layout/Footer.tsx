@@ -1,25 +1,33 @@
 import Link from "next/link";
 
+const LIENS_LEGAUX = [
+  { href: "/conditions-generales-de-vente", label: "Conditions générales de vente" },
+  { href: "/politique-de-confidentialite", label: "Politique de confidentialité" },
+];
+
 export function Footer() {
   return (
-    <footer id="footer" className="border-t border-stone-200">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-sm text-stone-500 sm:flex-row sm:justify-between sm:px-10">
-        <span className="font-serif tracking-[0.2em] text-stone-700">DEO CREATION</span>
-        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          <Link
-            href="/conditions-generales-de-vente"
-            className="transition-colors hover:text-stone-900"
-          >
-            Conditions générales de vente
-          </Link>
-          <Link
-            href="/politique-de-confidentialite"
-            className="transition-colors hover:text-stone-900"
-          >
-            Politique de confidentialité
-          </Link>
-        </nav>
-        <span>© {new Date().getFullYear()} Deo Création. Tous droits réservés.</span>
+    <footer className="relative z-10 border-t border-filet bg-fond">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-10 sm:px-10 lg:flex-row lg:items-start lg:justify-between">
+        <span className="font-serif text-sm tracking-[0.3em] text-attenue">
+          DEO CRÉATION
+        </span>
+
+        <div className="flex flex-col gap-2.5">
+          {LIENS_LEGAUX.map((lien) => (
+            <Link
+              key={lien.href}
+              href={lien.href}
+              className="text-sm text-faible transition-colors hover:text-encre"
+            >
+              {lien.label}
+            </Link>
+          ))}
+        </div>
+
+        <span className="text-xs text-faible">
+          © {new Date().getFullYear()} Deo Création. Tous droits réservés.
+        </span>
       </div>
     </footer>
   );

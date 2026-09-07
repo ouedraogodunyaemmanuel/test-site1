@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { useRef } from "react";
 import type { Print } from "@/types/print";
 import { formaterPrixCHF, PRIX_MINIMUM } from "@/lib/pricing";
@@ -8,22 +7,18 @@ import { PrintImage } from "@/components/shared/PrintImage";
 
 export function PrintCard({
   tirage,
+  categoryLabel,
   onOuvrir,
-  style,
-  sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
-  onRatioConnu,
+  sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw",
   animationDelayMs = 0,
   priority = false,
 }: {
   tirage: Print;
+  categoryLabel: string;
   onOuvrir: () => void;
-  // Exact pixel size computed by the justified gallery layout, so the
-  // photo displays at its real aspect ratio instead of a fixed shape.
-  style?: CSSProperties;
   sizes?: string;
-  onRatioConnu?: (ratio: number) => void;
   // Staggers the card's entrance animation behind the ones before it
-  // (see gallery-card-enter in globals.css and JustifiedGallery.tsx).
+  // (see gallery-card-enter in globals.css and PrintGrid.tsx).
   animationDelayMs?: number;
   // Skips the browser's native lazy-loading delay for above-the-fold
   // cards, so the photo starts downloading immediately instead of
@@ -53,32 +48,36 @@ export function PrintCard({
       onClick={onOuvrir}
       onMouseEnter={prechargerImageDetail}
       onFocus={prechargerImageDetail}
-      style={{ ...style, animationDelay: `${animationDelayMs}ms` }}
-      className="group relative block overflow-hidden text-left transition-transform active:scale-[0.94] gallery-card-enter"
+      className="group gallery-card-enter block text-left transition-transform active:scale-[0.97]"
+      style={{ animationDelay: `${animationDelayMs}ms` }}
     >
-      <PrintImage
-        // No options chosen yet at this stage (just hovering the
-        // gallery): we show the "no frame" variant by default — the
-        // format doesn't matter here since "aucun" ignores it. Uses the
-        // small pre-generated vignette (see lib/images.ts) rather than
-        // the full-resolution photo, since the grid never displays it
-        // that large.
-        src={obtenirUrlVignetteTirage(tirage)}
-        alt={tirage.title}
-        sizes={sizes}
-        dimensionnement="rempli"
-        unoptimized
-        priority={priority}
-        onRatioConnu={onRatioConnu}
-        imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
-      />
-      {/* Overlay revealed on hover: print title and starting price */}
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/0 to-black/0 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <span className="font-serif text-lg text-stone-50">{tirage.title}</span>
-        <span className="mt-1 text-sm text-stone-300">
-          à partir de {formaterPrixCHF(PRIX_MINIMUM)}
+      {/* Même format pour tous les tirages, quelle que soit leur
+          orientation réelle : la photo est recadrée (object-cover)
+          dans une case de ratio fixe, pour que la grille reste
+          régulière (voir PrintGrid.tsx). */}
+      <div className="aspect-[3/2] overflow-hidden">
+        <PrintImage
+          src={obtenirUrlVignetteTirage(tirage)}
+          alt={tirage.title}
+          sizes={sizes}
+          dimensionnement="rempli"
+          unoptimized
+          priority={priority}
+          imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+      </div>
+
+      {/* Titre et prix sous la photo, toujours lisibles. Ils
+          n'apparaissaient qu'au survol, donc jamais sur mobile. */}
+      <div className="mt-3 flex items-baseline justify-between gap-4">
+        <span className="font-serif text-lg text-encre">{tirage.title}</span>
+        <span className="text-[11px] tracking-[0.08em] whitespace-nowrap uppercase text-accent">
+          dès {formaterPrixCHF(PRIX_MINIMUM)}
         </span>
       </div>
+      <span className="text-[10px] tracking-[0.14em] uppercase text-attenue">
+        {categoryLabel}
+      </span>
     </button>
   );
 }

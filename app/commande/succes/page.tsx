@@ -21,10 +21,10 @@ export default async function PageSucces({
     <div className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center gap-4 px-6 text-center">
       {paiementConfirme ? (
         <>
-          <h1 className="font-serif text-3xl text-stone-900">
+          <h1 className="font-serif text-3xl text-encre">
             Merci pour votre commande !
           </h1>
-          <p className="text-stone-600">
+          <p className="text-texte">
             Votre paiement a bien été reçu. Vous recevrez votre tirage
             prochainement.
           </p>
@@ -32,10 +32,10 @@ export default async function PageSucces({
         </>
       ) : (
         <>
-          <h1 className="font-serif text-3xl text-stone-900">
+          <h1 className="font-serif text-3xl text-encre">
             Paiement introuvable
           </h1>
-          <p className="text-stone-600">
+          <p className="text-texte">
             Nous n&apos;avons pas pu confirmer ce paiement. Si vous pensez
             qu&apos;il s&apos;agit d&apos;une erreur, contactez-nous.
           </p>
@@ -43,7 +43,7 @@ export default async function PageSucces({
       )}
       <Link
         href="/"
-        className="mt-4 border border-stone-300 px-6 py-3 text-sm tracking-wide text-stone-600 transition hover:border-stone-900 hover:text-stone-900 active:scale-[0.93]"
+        className="mt-4 border border-filet px-6 py-3 text-sm tracking-wide text-attenue transition hover:border-filet-fort hover:text-encre active:scale-[0.93]"
       >
         Retour à la boutique
       </Link>
