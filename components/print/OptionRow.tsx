@@ -51,7 +51,7 @@ export function OptionRow({
               aria-label={option.label}
               className={`flex h-12 items-center justify-center border text-[13px] transition-colors active:scale-[0.96] ${
                 actif
-                  ? "border-accent text-accent-clair"
+                  ? "border-accent bg-accent/15 text-accent-clair"
                   : "border-filet text-attenue hover:border-filet-fort hover:text-encre"
               }`}
             >

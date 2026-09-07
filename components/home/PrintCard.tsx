@@ -6,6 +6,13 @@ import { obtenirUrlImageTirage, obtenirUrlVignetteTirage } from "@/lib/images";
 import { FORMATS } from "@/data/options";
 import { PrintImage } from "@/components/shared/PrintImage";
 
+// Où afficher le titre, le prix et la catégorie : "dessous" (par
+// défaut, desktop) ou "sans" bloc de légende du tout — voir
+// JustifiedGallery.tsx, qui passe "sans" pour ses cartes de largeur
+// variable, une légende désalignerait les lignes de la mise en page
+// justifiée.
+export type PlacementLegende = "dessous" | "sans";
+
 export function PrintCard({
   tirage,
   categoryLabel,
@@ -15,6 +22,7 @@ export function PrintCard({
   onRatioConnu,
   animationDelayMs = 0,
   priority = false,
+  legende = "dessous",
 }: {
   tirage: Print;
   categoryLabel: string;
@@ -34,6 +42,7 @@ export function PrintCard({
   // delay can push the photo's own load-in past the card's entrance
   // animation, making it "pop" in visibly late.
   priority?: boolean;
+  legende?: PlacementLegende;
 }) {
   // Réchauffe le cache du navigateur avec la photo pleine taille avant
   // même le clic : ouvrir la modale de détail affiche cette même photo
@@ -80,17 +89,21 @@ export function PrintCard({
         />
       </div>
 
-      {/* Titre et prix sous la photo, toujours lisibles. Ils
-          n'apparaissaient qu'au survol, donc jamais sur mobile. */}
-      <div className="mt-3 flex items-baseline justify-between gap-4">
-        <span className="font-serif text-lg text-encre">{tirage.title}</span>
-        <span className="text-[11px] tracking-[0.08em] whitespace-nowrap uppercase text-accent">
-          dès {formaterPrixCHF(PRIX_MINIMUM)}
-        </span>
-      </div>
-      <span className="text-[10px] tracking-[0.14em] uppercase text-attenue">
-        {categoryLabel}
-      </span>
+      {legende === "dessous" && (
+        <>
+          {/* Titre et prix sous la photo, toujours lisibles. Ils
+              n'apparaissaient qu'au survol, donc jamais sur mobile. */}
+          <div className="mt-3 flex items-baseline justify-between gap-4">
+            <span className="font-serif text-lg text-encre">{tirage.title}</span>
+            <span className="text-[11px] tracking-[0.08em] whitespace-nowrap uppercase text-accent">
+              dès {formaterPrixCHF(PRIX_MINIMUM)}
+            </span>
+          </div>
+          <span className="text-[10px] tracking-[0.14em] uppercase text-attenue">
+            {categoryLabel}
+          </span>
+        </>
+      )}
     </button>
   );
 }

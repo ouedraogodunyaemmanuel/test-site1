@@ -135,6 +135,12 @@ export function JustifiedGallery({
                 style={{ width: largeur, height: hauteur }}
                 sizes={`${Math.round(largeur)}px`}
                 onRatioConnu={(ratio) => gererRatioConnu(tirage.id, ratio)}
+                // Les cartes d'une même ligne ont des largeurs et des
+                // hauteurs différentes (mise en page justifiée) : une
+                // légende sous chacune désaligne les lignes. Le titre
+                // et le prix restent à un tap, la fiche du tirage
+                // s'ouvrant au clic.
+                legende="sans"
                 // Staggered by position, capped so a large gallery
                 // doesn't end up with a long tail of slow entrances.
                 animationDelayMs={Math.min(index, 12) * 80}

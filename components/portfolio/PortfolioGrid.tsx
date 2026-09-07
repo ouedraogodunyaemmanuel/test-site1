@@ -47,7 +47,7 @@ export function PortfolioGrid({ tirages }: { tirages: Print[] }) {
               // Bordures latérales aux couleurs du thème : elles
               // séparent les photos sans jamais rester noires en mode
               // clair.
-              className="h-auto w-full border-x-8 border-fond"
+              className="h-auto w-full border-x-[24px] border-fond sm:border-x-8"
             />
           </button>
         );
