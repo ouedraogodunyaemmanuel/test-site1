@@ -1,6 +1,7 @@
 import type { Print } from "@/types/print";
 import type { CategoryFilter, CategoryFilterOption } from "@/types/CategoryFilter";
 import { CategoryFilterRail } from "./CategoryFilterRail";
+import { JustifiedGallery } from "./JustifiedGallery";
 import { PrintGrid } from "./PrintGrid";
 
 export function GallerySection({
@@ -42,7 +43,24 @@ export function GallerySection({
 
       <div className="mt-10">
         {tirages.length > 0 ? (
-          <PrintGrid tirages={tirages} filtres={filtres} onOuvrirTirage={onOuvrirTirage} />
+          <>
+            {/* Mobile : mise en page justifiée (largeur de chaque
+                photo proportionnelle à son ratio réel), comme avant la
+                refonte visuelle. Desktop : grille régulière au format
+                uniforme (voir PrintGrid.tsx). Même URL de vignette dans
+                les deux cas (voir PrintCard.tsx), donc un seul
+                téléchargement malgré les deux montages. */}
+            <div className="sm:hidden">
+              <JustifiedGallery
+                tirages={tirages}
+                filtres={filtres}
+                onOuvrirTirage={onOuvrirTirage}
+              />
+            </div>
+            <div className="hidden sm:block">
+              <PrintGrid tirages={tirages} filtres={filtres} onOuvrirTirage={onOuvrirTirage} />
+            </div>
+          </>
         ) : (
           <div className="flex flex-col items-center gap-2.5 py-16 text-center">
             <span className="font-serif text-xl text-encre">Aucun tirage</span>

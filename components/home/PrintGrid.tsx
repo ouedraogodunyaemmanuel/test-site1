@@ -43,6 +43,6 @@ export function PrintGrid({
   );
 }
 
-function trouverLibelleCategorie(filtres: CategoryFilterOption[], categorie: string) {
+export function trouverLibelleCategorie(filtres: CategoryFilterOption[], categorie: string) {
   return filtres.find((filtre) => filtre.value === categorie)?.label ?? categorie;
 }

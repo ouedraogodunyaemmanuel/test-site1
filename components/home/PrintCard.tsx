@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { useRef } from "react";
 import type { Print } from "@/types/print";
 import { formaterPrixCHF, PRIX_MINIMUM } from "@/lib/pricing";
@@ -9,14 +10,21 @@ export function PrintCard({
   tirage,
   categoryLabel,
   onOuvrir,
+  style,
   sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw",
+  onRatioConnu,
   animationDelayMs = 0,
   priority = false,
 }: {
   tirage: Print;
   categoryLabel: string;
   onOuvrir: () => void;
+  // Exact pixel size computed by the justified-layout gallery used on
+  // mobile (see JustifiedGallery.tsx) — overrides the fixed crop ratio
+  // below so each photo keeps its real proportions there.
+  style?: CSSProperties;
   sizes?: string;
+  onRatioConnu?: (ratio: number) => void;
   // Staggers the card's entrance animation behind the ones before it
   // (see gallery-card-enter in globals.css and PrintGrid.tsx).
   animationDelayMs?: number;
@@ -54,8 +62,12 @@ export function PrintCard({
       {/* Même format pour tous les tirages, quelle que soit leur
           orientation réelle : la photo est recadrée (object-cover)
           dans une case de ratio fixe, pour que la grille reste
-          régulière (voir PrintGrid.tsx). */}
-      <div className="aspect-[3/2] overflow-hidden">
+          régulière (voir PrintGrid.tsx). Sans effet quand `style`
+          impose déjà une largeur et une hauteur précises (mise en page
+          justifiée, voir JustifiedGallery.tsx) : le ratio fixe ne
+          s'applique alors plus, les deux dimensions étant déjà
+          connues. */}
+      <div className="aspect-[3/2] overflow-hidden" style={style}>
         <PrintImage
           src={obtenirUrlVignetteTirage(tirage)}
           alt={tirage.title}
@@ -63,6 +75,7 @@ export function PrintCard({
           dimensionnement="rempli"
           unoptimized
           priority={priority}
+          onRatioConnu={onRatioConnu}
           imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
         />
       </div>
