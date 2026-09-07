@@ -25,6 +25,17 @@ export function Header() {
     return () => window.removeEventListener("keydown", gererTouche);
   }, [menuOuvert]);
 
+  // Bloque le défilement du corps pendant que le calque plein écran est
+  // ouvert, sinon la page défile sous lui.
+  useEffect(() => {
+    if (!menuOuvert) return;
+    const overflowPrecedent = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflowPrecedent;
+    };
+  }, [menuOuvert]);
+
   return (
     // `bg-fond-voile` : l'en-tête reste lisible par-dessus la photo du
     // hero, qui défile sous lui.
@@ -90,24 +101,56 @@ export function Header() {
       </div>
 
       {menuOuvert && (
-        <nav className="flex flex-col border-t border-filet bg-fond px-6 pb-6 md:hidden">
-          {LIENS_NAV.map((lien) => (
-            <Link
-              key={lien.href}
-              href={lien.href}
+        // Calque plein écran (`fixed`, pas `absolute` : en `absolute` il
+        // se limiterait à l'en-tête collant et la page resterait visible
+        // en dessous). `bg-fond-voile` + flou plutôt qu'un fond opaque :
+        // la photo du hero doit rester devinée derrière.
+        <div className="fixed inset-0 z-50 flex flex-col bg-[var(--fond-voile)] backdrop-blur-md md:hidden">
+          <div className="flex items-center justify-between px-[22px] py-5">
+            <span className="font-serif text-sm tracking-[0.28em] text-encre">
+              DEO CRÉATION
+            </span>
+            <button
+              type="button"
               onClick={() => setMenuOuvert(false)}
-              className="border-b border-filet py-4 font-serif text-xl text-encre"
+              aria-label="Fermer le menu"
+              className="text-xl leading-none text-attenue"
             >
-              {lien.label}
-            </Link>
-          ))}
-          <div className="mt-6 flex flex-col gap-2">
+              ×
+            </button>
+          </div>
+
+          <nav className="flex flex-1 flex-col px-[26px] py-10">
+            {LIENS_NAV.map((lien) => (
+              <Link
+                key={lien.href}
+                href={lien.href}
+                onClick={() => setMenuOuvert(false)}
+                className="border-b border-filet py-[18px] text-left font-serif text-2xl text-encre"
+              >
+                {lien.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex flex-col gap-2 px-[26px]">
             <span className="text-[10px] tracking-[0.18em] uppercase text-faible">
               Thème
             </span>
             <ThemeToggle pleineLargeur />
           </div>
-        </nav>
+
+          <div className="flex flex-col gap-2 p-[26px] text-xs text-faible">
+            <Link
+              href="/conditions-generales-de-vente"
+              onClick={() => setMenuOuvert(false)}
+              className="transition-colors hover:text-encre"
+            >
+              Conditions générales de vente
+            </Link>
+            <span>© {new Date().getFullYear()} Deo Création</span>
+          </div>
+        </div>
       )}
     </header>
   );
