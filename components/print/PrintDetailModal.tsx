@@ -233,15 +233,14 @@ export function PrintDetailModal({
                     {print.category}
                   </p>
                 </div>
-                {/* Toujours visible (pas seulement sur desktop) : une
-                    fois la photo remontée hors champ par le scroll
-                    (voir plus haut), c'est le seul bouton de fermeture
-                    qui reste atteignable sur mobile. */}
+                {/* Seulement sur desktop : sur mobile, la photo porte
+                    déjà sa propre croix de fermeture (juste au-dessus),
+                    en doublon avec celle-ci sinon. */}
                 <button
                   type="button"
                   onClick={closeWithAnimation}
                   aria-label="Fermer"
-                  className="text-xl leading-none text-attenue transition-colors hover:text-encre"
+                  className="hidden text-xl leading-none text-attenue transition-colors hover:text-encre sm:block"
                 >
                   ×
                 </button>
