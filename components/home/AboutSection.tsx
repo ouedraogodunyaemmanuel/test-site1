@@ -22,9 +22,8 @@ export function AboutSection() {
           sizes="(min-width: 1024px) 620px, 100vw"
           dimensionnement="rempli"
         />
-        {/* Fondu vers la page : vers le bas sur mobile, vers la droite
-            sur desktop. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--fond)] from-[2%] to-transparent to-60% lg:bg-gradient-to-r lg:from-transparent lg:from-55% lg:to-[var(--fond)]" />
+        {/* Fondu vers la page, vers la droite. */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent from-55% to-[var(--fond)]" />
       </div>
 
       <div className="flex flex-1 flex-col gap-5 px-6 pt-2 pb-12 sm:px-10 lg:px-14 lg:pt-[76px]">
