@@ -9,8 +9,8 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 const LIENS_NAV = [
   { href: "/#gallery", label: "Collection" },
   { href: "/portfolio", label: "Portfolio" },
-  { href: "/#about", label: "À propos" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/a-propos", label: "À propos" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {

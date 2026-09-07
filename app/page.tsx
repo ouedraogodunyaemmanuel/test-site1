@@ -9,8 +9,6 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { GallerySection } from "@/components/home/GallerySection";
-import { AboutSection } from "@/components/home/AboutSection";
-import { ContactSection } from "@/components/home/ContactSection";
 import { PrintDetailModal } from "@/components/print/PrintDetailModal";
 
 // Isolé dans son propre composant car `useSearchParams()` exige une
@@ -58,8 +56,6 @@ export default function Home() {
         tirages={tiragesAffiches}
         onOuvrirTirage={setTirageOuvert}
       />
-      <AboutSection />
-      <ContactSection />
       <Footer />
       {tirageOuvert && (
         <PrintDetailModal
