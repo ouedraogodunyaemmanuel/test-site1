@@ -148,7 +148,7 @@ export function PrintDetailModal({
           role="dialog"
           aria-modal="true"
           aria-labelledby="print-detail-title"
-          className={`relative flex h-full w-full flex-col overflow-hidden bg-fond transition-all duration-200 sm:h-auto sm:max-h-full sm:flex-row sm:border sm:border-filet ${
+          className={`relative flex h-full w-full flex-col overflow-y-auto bg-fond transition-all duration-200 sm:h-auto sm:max-h-full sm:flex-row sm:overflow-hidden sm:border sm:border-filet ${
             isLandscape ? "sm:max-w-7xl" : "sm:max-w-5xl"
           } ${isShown ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
           onClick={(event) => event.stopPropagation()}
@@ -219,7 +219,7 @@ export function PrintDetailModal({
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col overflow-y-auto sm:w-2/5">
+          <div className="flex flex-1 flex-col sm:w-2/5 sm:overflow-y-auto">
             <div className="flex flex-col gap-7 px-6 pt-1 pb-8 sm:px-12 sm:pt-12">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -233,11 +233,15 @@ export function PrintDetailModal({
                     {print.category}
                   </p>
                 </div>
+                {/* Toujours visible (pas seulement sur desktop) : une
+                    fois la photo remontée hors champ par le scroll
+                    (voir plus haut), c'est le seul bouton de fermeture
+                    qui reste atteignable sur mobile. */}
                 <button
                   type="button"
                   onClick={closeWithAnimation}
                   aria-label="Fermer"
-                  className="hidden text-xl leading-none text-attenue transition-colors hover:text-encre sm:block"
+                  className="text-xl leading-none text-attenue transition-colors hover:text-encre"
                 >
                   ×
                 </button>
