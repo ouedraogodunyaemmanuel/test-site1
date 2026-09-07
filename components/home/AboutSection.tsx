@@ -15,15 +15,17 @@ export function AboutSection() {
       id="about"
       className="relative z-10 flex flex-col border-t border-filet bg-fond lg:h-[480px] lg:flex-row"
     >
-      <div className="relative h-72 shrink-0 overflow-hidden lg:h-full lg:w-[620px]">
+      <div className="relative aspect-[7/5] shrink-0 overflow-hidden lg:aspect-auto lg:h-full lg:w-[620px]">
         <PrintImage
           src="/images/tirages/vertige/aucun.jpg"
           alt=""
           sizes="(min-width: 1024px) 620px, 100vw"
           dimensionnement="rempli"
         />
-        {/* Fondu vers la page, vers la droite. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent from-55% to-[var(--fond)]" />
+        {/* Fondu vers la page : vers le haut sur mobile (la photo est
+            au-dessus du texte, pas à sa gauche), vers la droite à
+            partir de lg (deux colonnes). */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--fond)] from-[2%] to-transparent lg:bg-gradient-to-r lg:from-transparent lg:from-55% lg:to-[var(--fond)]" />
       </div>
 
       <div className="flex flex-1 flex-col gap-5 px-6 pt-2 pb-12 sm:px-10 lg:px-14 lg:pt-[76px]">
